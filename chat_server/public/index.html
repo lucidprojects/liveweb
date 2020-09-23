@@ -1,0 +1,56 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    <script src="https://unpkg.com/cookie_js@1.2.2/cookie.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <title>Chedda Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+</head>
+
+<body>
+    <div class="main">
+        <header>
+            <div id="numUsers" class="user-count">0</div>
+            <img src="images/cheddarchat_logo.png" alt="cheddarchat_logo" class="logo">
+        </header>
+
+        <section id="messages">
+
+        </section>
+        <div id="formElements">
+            <input type="text" placeholder="let's have a conversation" id="message" name="message" />
+            <button onclick="sendmessage(document.getElementById('message').value, liveWebUser);">SEND</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var width = window.innerWidth;
+        var heightMinusBtm;
+        var messagesHeight = document.getElementById('messages').clientHeight;
+        var messagesHeightjq = $('#messages').height();
+
+        var messagesHeightAdj = () => {
+            if (width > 499) heightMinusBtm = $(window).height() - 100;
+            else heightMinusBtm = $(window).height() - 150;
+            console.log(heightMinusBtm);
+            if ($('#messages').height() > heightMinusBtm) $('#messages').css('height', heightMinusBtm);
+        }
+
+        $(document).ready(function () {
+            messagesHeightAdj();
+            if (messagesHeightjq > 50) console.log('messagesHeight = ' + messagesHeight + ' messagesHeightjq = ' + messagesHeightjq);
+        });
+
+        $(window).resize(function () {
+            messagesHeightAdj();
+        });
+    </script>
+</body>
+
+</html>
