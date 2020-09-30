@@ -39,7 +39,8 @@ io.sockets.on('connection',
        
         function updateCount() {
             console.log("ran connect updateCount");
-                 socket.broadcast.emit('pollUsers', connectCounter);
+                 io.emit('pollUsers', connectCounter);
+                //  socket.broadcast.emit('pollUsers', connectCounter);
                  console.log("ran updateCount from updateCount " + connectCounter);
         }
         

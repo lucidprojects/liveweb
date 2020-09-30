@@ -1,3 +1,25 @@
+ 
+ 
+ 
+ const listCodePoints = (arr) =>
+     arr.map(
+         (e) => [...e].map(
+             (cp) => `U+${cp.codePointAt(0).toString(16).toUpperCase()}`
+         ).join(' ')
+     );
+
+
+const ios = ['⏱', '⏲', '🕰', '⌛️', '⏳', '🎛'];
+const android = ['⏱️', '⏲️', '🕰️', '⌛', '⏳', '🎛️'];
+
+ console.log(listCodePoints(ios));
+ // [ "U+23F1", "U+23F2", "U+1F570", "U+231B U+FE0F", "U+23F3", "U+1F39B" ]
+
+ console.log(listCodePoints(android));
+ // [ "U+23F1 U+FE0F", "U+23F2 U+FE0F", "U+1F570 U+FE0F", "U+231B", "U+23F3", "U+1F39B U+FE0F" ]
+ 
+ 
+ 
  // Modified code from https://serverjs.io/tutorials/chat/ tutorial by Francisco Presencia 
 
  // check cookies for user name
