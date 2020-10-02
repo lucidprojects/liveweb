@@ -115,74 +115,6 @@
 
 
 
- var questions = [{
-         question: "How are you feeling today?"
-     },
-     {
-         question: "1st object in your head (5 words):"
-     },
-     {
-         question: "Things that you love (5 words):"
-     },
-     {
-         question: "Things that are tech (5 words):"
-     },
-     // {
-     //     question: "Things you like to do:"
-     // },
-
-     // things you like to do:
-     // {
-     //     question: "What's your email?",
-     //     pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-     // },
-     // {
-     //     question: "Create your password",
-     //     type: "password"
-     // }
- ]
-
- /**********
-   Credits to codepen for forms 
-   New Version: https://codepen.io/arcs/pen/rYXrNQ
-   Credits for the design go to XavierCoulombeM
-   https://dribbble.com/shots/2510592-Simple-register-form
- **********/
-
- ;
-
- var tTime = 100 // transition transform time from #register in ms
- var wTime = 200 // transition width time from #register in ms
- var eTime = 1000 // transition width time from inputLabel in ms
-
- // init
- // --------------
- var position = 0
-
- putQuestion()
-
- progressButton.addEventListener('click', validate)
- inputField.addEventListener('keyup', function (e) {
-     transform(0, 0) // ie hack to redraw
-     if (e.keyCode == 13) validate()
- })
-
- // functions
- // --------------
-
- // load the next question
- function putQuestion() {
-    //  <input id="inputField" required autofocus />
-    //             <label id="inputLabel"
-    //  var labels =     document.getElementsByTagName('LABELs');
-     var inputLabel = document.getElementsByTagName('label')[0];
-     var inputField = document.getElementById('inputField');
-     inputLabel.innerHTML = questions[position].question
-     inputField.value = ''
-     inputField.type = questions[position].type || 'text'
-     inputField.focus()
-     showCurrent()
- }
 
  // when all the questions have been answered
  function done() {
@@ -428,15 +360,15 @@
      }
  }
 
-//  var updateUserCount = (connectCounter) => {
- function updateUserCount(connectCounter){
+ //  var updateUserCount = (connectCounter) => {
+ function updateUserCount(connectCounter) {
      if (!connectCounter) document.getElementById('numUsers').innerHTML = ("1 participant");
      else document.getElementById('numUsers').innerHTML = (connectCounter + " participants");
      usersCount = connectCounter;
  }
 
-//  var updateAnswerCount = (answerCounter) => {
- function updateAnswerCount(answerCounter){
+ //  var updateAnswerCount = (answerCounter) => {
+ function updateAnswerCount(answerCounter) {
      if (!answerCounter) document.getElementById('numAnswers').innerHTML = ("0 participants answered");
      else if (answerCounter == 1) document.getElementById('numAnswers').innerHTML = (
          "1 participant answered");

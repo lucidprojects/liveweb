@@ -1,0 +1,94 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+    <script src="https://unpkg.com/cookie_js@1.2.2/cookie.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <!-- used Velocity instead of jQuery yay -->
+    <!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script>
+    <script type="text/javascript" src="js/index_socket.js"></script>
+    <title>Questions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+</head>
+
+<body>
+    <div id="progress"></div>
+    <div id="numUsers" class="user-count">0 participants</div>
+    <div id="numAnswers" class="user-answers">0 participants answered</div>
+    <div class="center">
+        <div id="register">
+
+            <i id="progressButton" class="ion-android-arrow-forward next"></i>
+            <div>Describe things w/ single words, space delimited:</div>
+            <div id="inputContainer">
+
+                <input id="inputField" required autofocus />
+                <label id="inputLabel"></label>
+                <div id="inputProgress"></div>
+            </div>
+
+        </div>
+        <!-- <button id="results" class="btn">Show Results</button> <button id="reset" class="btn2">Reset</button> -->
+    </div>
+
+    <script type="text/javascript">
+        var questions = [{
+                question: "How are you feeling today?"
+            },
+            {
+                question: "1st object in your head (5 words):"
+            },
+            {
+                question: "Things that you love (5 words):"
+            },
+            {
+                question: "Things that are tech (5 words):"
+            },
+        ]
+
+        /**********
+          Credits to codepen for forms New Version: https://codepen.io/arcs/pen/rYXrNQ
+          Credits for the design go to XavierCoulombeM https://dribbble.com/shots/2510592-Simple-register-form
+        **********/
+
+        var tTime = 100 // transition transform time from #register in ms
+        var wTime = 200 // transition width time from #register in ms
+        var eTime = 1000 // transition width time from inputLabel in ms
+
+        // init
+        // --------------
+        var position = 0
+
+        putQuestion()
+
+        progressButton.addEventListener('click', validate)
+        inputField.addEventListener('keyup', function (e) {
+            transform(0, 0) // ie hack to redraw
+            if (e.keyCode == 13) validate()
+        })
+
+        // functions
+        // --------------
+
+        // load the next question
+        function putQuestion() {
+            inputLabel.innerHTML = questions[position].question
+            inputField.value = ''
+            inputField.type = questions[position].type || 'text'
+            inputField.focus()
+            showCurrent()
+        }
+    </script>
+
+
+
+
+</body>
+
+</html>
