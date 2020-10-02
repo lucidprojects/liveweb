@@ -410,22 +410,19 @@
             if (leftMathPxVW > winWidth - 500) {
                 leftMath = Math.floor(Math.random() * Math.floor(winWidth - 700));
                 leftMathPxVW = pxTOvw(leftMath);
-                // console.log("leftMath updated to " + leftMathPxVW);
                 leftMath = leftMathPxVW;
             }
 
             var top = 'top:' + topMath + 'vh;';
             var left = 'left:' + leftMath + 'vw;';
-
-            // let doCount = 0;
-
-
+            
             function isInArray(_topMath) {
                 // let myNumb = Math.floor(_topMath);
                 // let myNumbMax = myNumb + 2;
                 // let myNumbMin = myNumb - 2;
                 // console.log("myNumb = " + myNumb);
                 // console.log("we're in isInArray");
+
                 let inArray = false;
                 do {
                     let myNumb = Math.floor(_topMath);
@@ -438,7 +435,6 @@
                             _topMath = Math.random() * 100;
                             myNumb = Math.floor(_topMath);
                             break;
-
                         }
                         inArray = false;
                     }
@@ -446,7 +442,6 @@
                 } while (inArray == true);
 
                 topVals.push(Math.floor(_topMath));
-
 
                 // if (inArray == false) {
                 //     topVals.push(Math.floor(_topMath));
@@ -459,15 +454,10 @@
 
 
             }
-
-            // do initial call only once then do in do / while loop
-
             topMath = isInArray(topMath);
-
 
             console.log("topVals = " + topVals);
 
-            // topVals.push(Math.floor(topMath));
             leftVals.push(Math.floor(leftMath));
             console.log("");
             console.log("##################");
