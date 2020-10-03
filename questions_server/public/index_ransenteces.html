@@ -130,7 +130,7 @@
 
                     // finally set unique values to shared
                     lArray = lArrayTemp;
-                    // console.log(lArray);
+                    console.log(lArray);
                 }
 
                 // loop through data object received
@@ -401,76 +401,44 @@
 
         //adapted random style code from https://github.com/marcelwang/LiveWeb-week2/blob/master/public/chat204.html
         var randomPos = function () {
-            let topMath = Math.random() * (1, 90);
-            let leftMath = Math.random() * 80;
+            let topMath = Math.random() * 100;
+            let leftMath = Math.random() * 100;
             let winWidth = window.innerWidth;
             let leftMathPxVW = vwTOpx(leftMath);
 
+            // console.log("leftMath = " + leftMath + " leftMatPx = " + leftMathPxVW);
+            // console.log("winWidth = " + winWidth);
+
             // check if too wide
             if (leftMathPxVW > winWidth - 500) {
+                // leftMath = Math.floor(Math.random(400, 600));
                 leftMath = Math.floor(Math.random() * Math.floor(winWidth - 700));
                 leftMathPxVW = pxTOvw(leftMath);
+                // console.log("leftMath updated to " + leftMathPxVW);
                 leftMath = leftMathPxVW;
             }
 
             var top = 'top:' + topMath + 'vh;';
             var left = 'left:' + leftMath + 'vw;';
 
-            function isInArray(_topMath) {
-                // let myNumb = Math.floor(_topMath);
-                // let myNumbMax = myNumb + 2;
-                // let myNumbMin = myNumb - 2;
-                // console.log("myNumb = " + myNumb);
-                // console.log("we're in isInArray");
-
-                let inArray = false;
-                do {
-                    let myNumb = Math.floor(_topMath);
-                    let myNumbMax = myNumb + 2;
-                    let myNumbMin = myNumb - 2;
-                    for (let i = myNumbMin; i < myNumbMax; i++) {
-                        if (topVals.includes(i)) {
-                            console.log("myNumb = " + myNumb + " and nums contains " + i);
-                            inArray = true;
-                            _topMath = Math.random() * 100;
-                            myNumb = Math.floor(_topMath);
-                            break;
-                        }
-                        inArray = false;
-                    }
-                    console.log("inArray = " + inArray);
-                } while (inArray == true);
-                top = 'top:' + topMath + 'vh;';
-                topVals.push(Math.floor(_topMath));
-
-                // if (inArray == false) {
-                //     topVals.push(Math.floor(_topMath));
-                //     return _topMath;
-
-                // } else {
-                //     _topMath = Math.random() * 100;
-                //     return isInArray(_topMath);
-                // }
-
-
-            }
-            topMath = isInArray(topMath);
-
-            
-
-
-            console.log("topVals = " + topVals);
-
+            topVals.push(Math.floor(topMath));
             leftVals.push(Math.floor(leftMath));
-            console.log("");
-            console.log("##################");
+
             return top + left;
         }
 
 
-
         // random word structrue found at https://funprogramming.org/57-A-random-sentence-generator-writes-nonsense.html
-        // art, adj, noun, verb, prep, art, adj, noun 
+        //   write_word(art);
+        //   write_word(adj);
+        //   write_word(nou);
+
+        //   write_word(ver);
+        //   write_word(pre);
+
+        //   write_word(art);
+        //   write_word(adj);
+        //   write_word(nou);
 
         let results = () => {
             for (let i = 0; i < 15; i++) {
@@ -487,8 +455,11 @@
                 var ranSentence = arts[num7] + ' ' + feelings[num2] + ' ' + loves[num] + ' ' +
                     ver[num8] + ' ' + preps[num5] + ' ' + feelings[num9] + ' ' + time[num6];
 
+                // console.log(ranSentence);
+                //adapted random style code from https://github.com/marcelwang/LiveWeb-week2/blob/master/public/chat204.html
                 document.getElementById('progress').innerHTML += '<div id="sentence' + i + '" style="' +
                     randomPos() + '"><span class="ranSent">' + ranSentence + '</span></div>';
+                // document.getElementById('words').innerHTML += '<p style="position: absolute;' + randomStyle() + '">' + data + '</p>';    
             }
         }
 

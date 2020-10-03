@@ -172,3 +172,38 @@ div[id^="sentence"] {
     height: 2em;
     position: absolute;
 }
+
+
+#outerHaiku {
+    position: absolute;
+}
+
+
+div[id^="haiku"] {
+    width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 1000;
+    font-size: 28px;
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+    font-weight: bold;
+    height: 1.15em;
+    /* position: absolute; */
+    /* display: contents; */
+}
+
+#foryou {
+    display: block;
+    font-size: 18px;
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+    opacity: 0.0;
+    font-style: italic;
+
+}
+
+
+/* div[id^="haiku"] {
+    height: auto !important;
+} */
