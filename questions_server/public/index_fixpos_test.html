@@ -402,7 +402,7 @@
         //adapted random style code from https://github.com/marcelwang/LiveWeb-week2/blob/master/public/chat204.html
         var randomPos = function () {
             let topMath = Math.random() * (1, 90);
-            let leftMath = Math.random() * 80;
+            let leftMath = Math.random() * 40;
             let winWidth = window.innerWidth;
             let leftMathPxVW = vwTOpx(leftMath);
 
@@ -413,8 +413,8 @@
                 leftMath = leftMathPxVW;
             }
 
-            var top = 'top:' + topMath + 'vh;';
-            var left = 'left:' + leftMath + 'vw;';
+            // var top = 'top:' + topMath + 'vh;';
+            // var left = 'left:' + leftMath + 'vw;';
 
             function isInArray(_topMath) {
                 // let myNumb = Math.floor(_topMath);
@@ -440,7 +440,7 @@
                     }
                     console.log("inArray = " + inArray);
                 } while (inArray == true);
-                top = 'top:' + topMath + 'vh;';
+                // top = 'top:' + topMath + 'vh;';
                 topVals.push(Math.floor(_topMath));
 
                 // if (inArray == false) {
@@ -454,9 +454,10 @@
 
 
             }
-            topMath = isInArray(topMath);
+            //topMath = isInArray(topMath);
 
-            
+            var top = 'top:' + topMath + 'vh;';
+            var left = 'left:' + leftMath + 'vw;';
 
 
             console.log("topVals = " + topVals);
