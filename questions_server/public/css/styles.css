@@ -20,6 +20,12 @@ h1 {
     overflow: hidden;
 }
 
+#progressButton{
+    position: absolute;
+    z-index: 100;
+}
+
+
 .center {
     height: 100vh;
     display: flex;
@@ -76,6 +82,7 @@ h1 {
     width: 350px;
     margin-top: 25px;
     transition: opacity .3s ease-in-out;
+    z-index: 10;
 }
 
 #inputContainer input {
@@ -207,3 +214,11 @@ div[id^="haiku"] {
 /* div[id^="haiku"] {
     height: auto !important;
 } */
+
+@media screen and (max-width:600px){
+    .user-answers {
+        right: unset;
+        top: 30px;
+
+    }
+}

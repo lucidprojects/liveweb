@@ -1,0 +1,302 @@
+#tvCanvas {
+    position: absolute;
+    left: 0;
+    z-index: 1000;
+    width: 1080px;
+    height: 728px;
+    pointer-events: none;
+}
+
+#myBtn {
+    position: absolute;
+    z-index: 1500;
+    left: 0;
+    top: 9px;
+    display: none;
+}
+
+#inverBtn {
+    position: absolute;
+    z-index: 1500;
+    top: 9px;
+    left: 6px;
+}
+
+#weirdBtn {
+    position: absolute;
+    z-index: 1500;
+    top: 9px;
+    left: 104px;
+}
+
+#tintBtn {
+    position: absolute;
+    z-index: 1500;
+    top: 9px;
+    left: 191px;
+}
+#threshBtn {
+    position: absolute;
+    z-index: 1500;
+    top: 9px;
+    left: 264px;
+}
+
+#myVideo {
+    position: absolute;
+    top: 210px;
+    left: 229px;
+    /* width: 270px;
+    height: 210px; */
+    z-index: 100;
+    display: none;
+}
+
+#canvas1 {
+    position: absolute;
+    left: 75px;
+    z-index: 10;
+    -ms-transform: rotate(-30deg);
+    transform: rotate(-30deg);
+    top: 20px;
+    width: 400px;
+    height: 300px;
+    /* z-index: 1500; */
+}
+
+#myImage {
+    left: 72px;
+    position: absolute;
+    top: 507px;
+    z-index: 50;
+    width: 228px;
+    height: 170px;
+    transform: rotate(-90deg);
+}
+
+div[id^="image"] {
+    position: absolute;
+    /* background-size: auto;
+    background-repeat: no-repeat;
+    background-image: url(../images/tvbars.gif); */
+}
+
+.bars {
+    background-size: auto;
+    background-repeat: no-repeat;
+    background-image: url(../images/tvbars.gif);
+}
+
+#image1 {
+    position: absolute;
+    top: 220px;
+    left: 229px;
+    width: 280px;
+    height: 224px;
+    z-index: 100;
+    background-size: 620px 430px; /* tv size */
+
+}
+
+#image1.tvSize {
+    background-size: 620px 430px !important; /* tv size */
+}
+
+#image2 {
+    position: absolute;
+    left: 496px;
+    top: 40px;
+    width: 155px;
+    height: 115px;
+    background-position-y: -20px;
+    background-position-x: -20px;
+    background-size: 402px 306px;
+}
+
+#image3 {
+    position: absolute;
+    left: 668px;
+    width: 100px;
+    top: 87px;
+    height: 80px;
+    background-position-x: 12px;
+    background-size: 210px 171px;
+}
+
+#image4 {
+    position: absolute;
+    width: 134px;
+    top: 283px;
+    height: 135px;
+    left: 62px;
+    background-position-x: -40px;
+    background-size: 420px 288px;
+}
+
+#image5 {
+    position: absolute;
+    left: 630px;
+    top: 206px;
+    width: 150px;
+    height: 110px;
+    background-position-x: -30px;
+    background-size: 170px 120px;
+    /* bar size */
+    /* background-size: 380px 240px; tv size  */
+}
+
+#image5.tvSize {
+    background-size: 380px 240px !important;
+}
+
+#image6 {
+    position: absolute;
+    left: 819px;
+    top: 140px;
+    width: 225px;
+    height: 165px;
+    background-size: 263px 150px;
+    /*bar size */
+    /* background-size: 493px 330px; tv size */
+
+}
+
+#image6.tvSize {
+    background-size: 493px 330px !important;
+}
+
+#image7 {
+    position: absolute;
+    left: 817px;
+    top: 315px;
+    width: 160px;
+    height: 115px;
+    background-size: 159px 110px;
+    /* bar size */
+    /* background-size: 329px 250px;    tv size */
+}
+
+#image7.tvSize {
+    background-size: 329px 250px !important;
+}
+
+
+#image8 {
+    position: absolute;
+    left: 662px;
+    top: 495px;
+    width: 260px;
+    height: 208px;
+    background-size: 260px 210px;
+    /* bar size */
+    /* background-size: 590px 440px; tv size  */
+}
+
+#image8.tvSize {
+    background-size: 590px 440px !important;
+}
+
+#image9 {
+    position: absolute;
+    left: 907px;
+    top: 609px;
+    width: 122px;
+    height: 110px;
+    background-size: 120px 101px;
+    /* bar size */
+    /* background-size: 780px 221px; tv size  */
+}
+
+#image9.tvSize {
+    background-size: 390px 221px !important;
+}
+
+#image10 {
+    position: absolute;
+    width: 145px;
+    height: 125px;
+    left: 610px;
+    top: 317px;
+    background-size: 150px 130px;
+    /* bar size */
+    /* background-size: 330px 270px; tv size  */
+}
+
+#image10.tvSize {
+    background-size: 330px 270px !important;
+}
+
+#image11 {
+    position: absolute;
+    z-index: 100;
+    left: 350px;
+    top: 473px;
+    width: 250px;
+    height: 200px;
+    background-size: 260px 210px;
+    /* bar size */
+    /* background-size: 614px 460px; tv size  */
+}
+
+#image11.tvSize {
+    background-size: 614px 460px !important
+}
+
+
+#image12 {
+    position: absolute;
+    left: 10px;
+    width: 11%;
+    top: 633px;
+    z-index: 500;
+    max-width: 110px;
+    height: 101px !important;
+    background-size: 120px 90px;
+    /* bar size */
+    /* background-size: 250px 200px; tv size  */
+}
+
+#image12.tvSize {
+    background-size: 250px 200px !important;
+}
+
+#image13 {
+    position: absolute;
+    left: 367px;
+    width: 106px;
+    height: 86px;
+    top: 18px;
+    /* background-position-x: -63px; */
+    background-size: 240px 170px;
+}
+
+
+
+
+#image14 {
+position: absolute;
+    left: 132px;
+    top: 417px;
+    z-index: 50;
+    width: 265px;
+    height: 310px;
+    transform: rotate(-90deg);
+    background-size: 250px 200px;
+    background-repeat: no-repeat;
+
+}
+
+#image14.tvSize {
+    background-size: 517px 360px!important;
+}
+
+/* #image14 { */
+/* position: absolute;
+    top: 210px;
+    left: 229px;
+    width: 270px;
+    height: 210px;
+    z-index: 100; */
+/* }
+
+#image15 {} */

@@ -46,13 +46,13 @@
 
  //verbs
  var ver = [
-     "sings", "dances", "was dancing", "runs", "will run", "walks",
-     "flies", "moves", "moved", "will move", "glows", "glowed", "spins", "promised",
-     "hugs", "cheated", "waits", "is waiting", "is studying", "swims",
-     "travels", "traveled", "plays", "played", "enjoys", "will enjoy",
+     "sings", "dances", "dancing", "runs", "run", "walks",
+     "flies", "moves", "moved", "move", "glows", "glowed", "spins", "promised",
+     "hugs", "cheated", "waits", "waiting", "is studying", "swims",
+     "travels", "traveled", "plays", "played", "enjoys", "enjoy",
      "illuminates", "arises", "eats", "drinks", "calculates", "kissed", "faded", "listens",
-     "navigated", "responds", "smiles", "will smile", "will succeed",
-     "is wondering", "is thinking", "is", "was", "will be", "might be", "was never"
+     "navigated", "responds", "smiles", "smile", "succeed",
+     "wondering", "thinking", "is", "was", "be"
  ];
 
  let topVals = [];
@@ -302,21 +302,28 @@
 
  //adapted random style code from https://github.com/marcelwang/LiveWeb-week2/blob/master/public/chat204.html
  var randomPos = function () {
-     let topMath = Math.random() * (1, 86);
-     let leftMath = Math.random() * 100;
+
      let winWidth = window.innerWidth;
-     let leftMathPxVW = vwTOpx(leftMath);
+     let leftMath, topMath;
 
-     // console.log("leftMath = " + leftMath + " leftMatPx = " + leftMathPxVW);
-     // console.log("winWidth = " + winWidth);
+     if (winWidth < 600) {
+         //handle mobile display
+         leftMath = 3;
+         topMath = 21;
+     } else {
+         leftMath = Math.random() * 100;
+         topMath = Math.random() * (1, 86);
 
-     // check if too wide
-     if (leftMathPxVW > winWidth - 500) {
-         // leftMath = Math.floor(Math.random(400, 600));
-         leftMath = Math.floor(Math.random() * Math.floor(winWidth - 700));
-         leftMathPxVW = pxTOvw(leftMath);
-         // console.log("leftMath updated to " + leftMathPxVW);
-         leftMath = leftMathPxVW;
+         let leftMathPxVW = vwTOpx(leftMath);
+
+         // check if too wide
+         if (leftMathPxVW > winWidth - 500) {
+             // leftMath = Math.floor(Math.random(400, 600));
+             leftMath = Math.floor(Math.random() * Math.floor(winWidth - 700));
+             leftMathPxVW = pxTOvw(leftMath);
+             // console.log("leftMath updated to " + leftMathPxVW);
+             leftMath = leftMathPxVW;
+         }
      }
 
      var top = 'top:' + topMath + 'vh;';
@@ -404,14 +411,16 @@
  }
 
  function displayHaiku(i, mySpanWidth) {
-    setTimeout(function () {
+     setTimeout(function () {
          var myDiv = document.getElementById('haiku' + i)
-         Velocity(myDiv, { width: mySpanWidth}, 2500);
-    }, 2500 * i);
-    
-    setTimeout(function () {
-        unfade(foryou);
-    }, 7500)
+         Velocity(myDiv, {
+             width: mySpanWidth
+         }, 2500);
+     }, 2500 * i);
+
+     setTimeout(function () {
+         unfade(foryou);
+     }, 7500)
 
  }
 
@@ -432,17 +441,17 @@
 
 
 
-//  function showCollabLine() {
-//      var haiku4you = document.getElementById('foryou');
-//      let showline = true;
-//      if(showline) Velocity(haiku4you, {opacity: 1.0 }, 2500);
-//      showline = false;
-//     // for (let i = 0 ; i < 101; i ++){
-//     //     haiku4you.style.opacity = "0." + i;
+ //  function showCollabLine() {
+ //      var haiku4you = document.getElementById('foryou');
+ //      let showline = true;
+ //      if(showline) Velocity(haiku4you, {opacity: 1.0 }, 2500);
+ //      showline = false;
+ //     // for (let i = 0 ; i < 101; i ++){
+ //     //     haiku4you.style.opacity = "0." + i;
 
-//     // }
+ //     // }
 
-//  }
+ //  }
 
  socket.on('allAnswered', function () {
      setTimeout(function () {

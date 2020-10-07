@@ -400,8 +400,76 @@
         }
 
         //adapted random style code from https://github.com/marcelwang/LiveWeb-week2/blob/master/public/chat204.html
+        // var randomPos = function () {
+        //     let topMath = Math.random() * (1, 90);
+        //     let leftMath = Math.random() * 40;
+        //     let winWidth = window.innerWidth;
+        //     let leftMathPxVW = vwTOpx(leftMath);
+
+        //     // check if too wide
+        //     if (leftMathPxVW > winWidth - 500) {
+        //         leftMath = Math.floor(Math.random() * Math.floor(winWidth - 700));
+        //         leftMathPxVW = pxTOvw(leftMath);
+        //         leftMath = leftMathPxVW;
+        //     }
+
+        //     // var top = 'top:' + topMath + 'vh;';
+        //     // var left = 'left:' + leftMath + 'vw;';
+
+        //     function isInArray(_topMath) {
+        //         // let myNumb = Math.floor(_topMath);
+        //         // let myNumbMax = myNumb + 2;
+        //         // let myNumbMin = myNumb - 2;
+        //         // console.log("myNumb = " + myNumb);
+        //         // console.log("we're in isInArray");
+
+        //         let inArray = false;
+        //         do {
+        //             let myNumb = Math.floor(_topMath);
+        //             let myNumbMax = myNumb + 2;
+        //             let myNumbMin = myNumb - 2;
+        //             for (let i = myNumbMin; i < myNumbMax; i++) {
+        //                 if (topVals.includes(i)) {
+        //                     console.log("myNumb = " + myNumb + " and nums contains " + i);
+        //                     inArray = true;
+        //                     _topMath = Math.random() * 100;
+        //                     myNumb = Math.floor(_topMath);
+        //                     break;
+        //                 }
+        //                 inArray = false;
+        //             }
+        //             console.log("inArray = " + inArray);
+        //         } while (inArray == true);
+        //         // top = 'top:' + topMath + 'vh;';
+        //         topVals.push(Math.floor(_topMath));
+
+        //         // if (inArray == false) {
+        //         //     topVals.push(Math.floor(_topMath));
+        //         //     return _topMath;
+
+        //         // } else {
+        //         //     _topMath = Math.random() * 100;
+        //         //     return isInArray(_topMath);
+        //         // }
+
+
+        //     }
+        //     //topMath = isInArray(topMath);
+
+        //     var top = 'top:' + topMath + 'vh;';
+        //     var left = 'left:' + leftMath + 'vw;';
+
+
+        //     console.log("topVals = " + topVals);
+
+        //     leftVals.push(Math.floor(leftMath));
+        //     console.log("");
+        //     console.log("##################");
+        //     return top + left;
+        // }
+
         var randomPos = function () {
-            let topMath = Math.random() * (1, 90);
+            let topMath = Math.random() * (1, 80);
             let leftMath = Math.random() * 40;
             let winWidth = window.innerWidth;
             let leftMathPxVW = vwTOpx(leftMath);
@@ -426,22 +494,29 @@
                 let inArray = false;
                 do {
                     let myNumb = Math.floor(_topMath);
-                    let myNumbMax = myNumb + 2;
-                    let myNumbMin = myNumb - 2;
-                    for (let i = myNumbMin; i < myNumbMax; i++) {
+                    // ** made them be 3 apart
+                    let myNumbMax = myNumb + 3;
+                    let myNumbMin = myNumb - 3;
+                    // ** Change to <= instead of just <
+                    for (let i = myNumbMin; i <= myNumbMax; i++) {
                         if (topVals.includes(i)) {
                             console.log("myNumb = " + myNumb + " and nums contains " + i);
                             inArray = true;
                             _topMath = Math.random() * 100;
                             myNumb = Math.floor(_topMath);
                             break;
+                        } else {
+                            //** Added in an explicit else, probably didn't matter
+                            inArray = false;
                         }
-                        inArray = false;
                     }
                     console.log("inArray = " + inArray);
                 } while (inArray == true);
                 // top = 'top:' + topMath + 'vh;';
                 topVals.push(Math.floor(_topMath));
+
+                // ** This is the main thing that was broken, this wasn't here
+                return _topMath;
 
                 // if (inArray == false) {
                 //     topVals.push(Math.floor(_topMath));
@@ -454,21 +529,21 @@
 
 
             }
-            //topMath = isInArray(topMath);
+            // ** I think this was commented out
+            topMath = isInArray(topMath);
+            console.log("*" + topMath)
 
             var top = 'top:' + topMath + 'vh;';
             var left = 'left:' + leftMath + 'vw;';
 
-
-            console.log("topVals = " + topVals);
+            // ** Just to see easier **
+            console.log("topVals = " + topVals.sort());
 
             leftVals.push(Math.floor(leftMath));
             console.log("");
             console.log("##################");
             return top + left;
-        }
-
-
+        }    
 
         // random word structrue found at https://funprogramming.org/57-A-random-sentence-generator-writes-nonsense.html
         // art, adj, noun, verb, prep, art, adj, noun 
