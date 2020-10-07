@@ -100,7 +100,7 @@ window.addEventListener('load', function () {
 
     }
 
-    // without this func, manipulating the canvas woudl only get the single frame added to the canvas prior to manipulation
+    // without this func, manipulating the canvas would only get the single frame added to the canvas prior to manipulation
     function drawDataToCtx1() {
         // get canvas image again
         ctx1.drawImage(myVideo, 0, 0, 174, 140);
