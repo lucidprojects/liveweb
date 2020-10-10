@@ -65,6 +65,19 @@
 				filterMode = 5
 			});
 
+
+			// This kicks it off
+			// 	initCapture();
+
+			// });
+
+			// function initCapture() {
+			// 	console.log("initCapture");
+
+			// The video element on the page to display the webcam
+			// let video = document.getElementById('myvideo');
+
+			// Constraints - what do we want?
 			let constraints = {
 				audio: true,
 				video: true
@@ -290,11 +303,11 @@
 					//p.send('whatever' + Math.random())
 
 					// Let's give them our stream
-					
 					this.simplepeer.addStream(stream);
+					
+					// testing to try to see if the sending stream has "tracks"
 					let myTracks = stream.getTracks();
 					console.dir(myTracks);
-
 
 					console.log("Send our stream");
 				});
@@ -303,8 +316,11 @@
 				this.simplepeer.on('stream', stream => {
 					console.log('Incoming Stream');
 					console.log("Incoming stream" + stream);
+					
+					// testing to try to see if the received stream has "tracks"
 					let peerTracks = stream.getTracks();
 					console.dir(peerTracks);
+					
 					// This should really be a callback
 					// Create a video object
 					let ovideo = document.createElement("VIDEO");
@@ -318,7 +334,7 @@
 					console.log(ovideo);
 				});
 			}
-
+			
 			inputsignal(sig) {
 				this.simplepeer.signal(sig);
 			}
