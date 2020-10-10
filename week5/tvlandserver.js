@@ -57,11 +57,9 @@ var https = require('https');
 
 // Security options - key and certificate
 var options = {
-    // key: fs.readFileSync('/home/jsherwood/ssl/star_itp_io.key'),
-    // cert: fs.readFileSync('/home/jsherwood/ssl/star_itp_io.pem')
-    //for local teseting
-    key: fs.readFileSync('/Users/dezbookpro/itp/liveweb/itp_io.key_cert/star_itp_io.key'),
-    cert: fs.readFileSync('/Users/dezbookpro/itp/liveweb/itp_io.key_cert/star_itp_io.pem')
+    // key: fs.readFileSync('star_itp_io.key'),
+    // cert: fs.readFileSync('star_itp_io.pem')
+   
 };
 
 // We pass in the Express object and the options object
