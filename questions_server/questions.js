@@ -64,7 +64,7 @@ io.sockets.on('connection',
                 io.emit('allAnswered', true);
                 console.log("all users answered");
                 answerCounter = 0;
-                console.log("answer count set back to " + answerCounter);
+                console.log("answer count set back to " + answerCounter);   
             }
 
 

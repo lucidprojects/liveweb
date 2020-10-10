@@ -1,0 +1,241 @@
+<html>
+
+<head>
+
+    <script type="text/javascript">
+        let friendTvs = [];
+        let canvas, ctx;
+        let canvasBack, cbCtx
+        let ctxClicked = false;
+        let mappedY, mappedX, mappedT;
+        let isMouseDown = false;
+        let isManipulated = false;
+        let x = 0;
+        let y = 0;
+        let filterMode = 1;
+        let myId;
+
+        let simplepeers = [];
+        var socket;
+        var mystream;
+
+
+        let cw, ch;
+
+        // set up video and canvas
+        window.addEventListener('load', function () {
+
+
+            let myVideo = document.getElementById('myVideo');
+            let canvas = document.getElementById('canvas');
+            let ctx = canvas.getContext('2d');
+
+            let canvasBack = document.getElementById('canvasBack');
+            var cbCtx = canvasBack.getContext('2d');
+
+
+            let constraints = {
+                audio: false,
+                video: true
+            }
+
+            // set up buttons
+            // let newImgBtn = document.getElementById('myBtn');
+            // newImgBtn.addEventListener('click', loadDataImg);
+
+            let inverseBtn = document.getElementById('inverBtn');
+            inverseBtn.addEventListener('click', function () {
+                filterMode = 1
+            });
+            let weirdCBtn = document.getElementById('weirdBtn');
+            weirdCBtn.addEventListener('click', function () {
+                filterMode = 2
+            });
+            let tintBtn = document.getElementById('tintBtn');
+            tintBtn.addEventListener('click', function () {
+                filterMode = 3
+            });
+            let threshBtn = document.getElementById('threshBtn');
+            threshBtn.addEventListener('click', function () {
+                filterMode = 4
+            });
+            let brightBtn = document.getElementById('brightBtn');
+            brightBtn.addEventListener('click', function () {
+                filterMode = 5
+            });
+
+
+            // video stuff
+            // Prompt the user for permission, get the stream
+            navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+                    /* Use the stream */
+                    // Attach to our video object
+                    myVideo.srcObject = stream;
+                    // Wait for the stream to load enough to play
+                    myVideo.onloadedmetadata = function (e) {
+                        myVideo.play();
+                        //setup();
+                        //drawOrig();
+                        checkMyVidLoaded();
+                    };
+                })
+                .catch(function (err) {
+                    /* Handle the error */
+                    alert(err);
+                });
+
+
+            function checkMyVidLoaded() {
+                myVideo.addEventListener('play', function () {
+
+
+                    cw = myVideo.clientWidth;
+                    ch = myVideo.clientHeight;
+                    canvas.width = cw;
+                    canvas.height = ch;
+                    canvasBack.width = cw;
+                    canvasBack.height = ch;
+                    draw(myVideo, ctx, cbCtx, cw, ch);
+                }, false);
+            }
+
+            function draw(v, c, bc, w, h) {
+                // if(v.paused || v.ended) return false;
+                // First, draw it into the backing canvas
+                bc.drawImage(v, 0, 0, w, h);
+                // Grab the pixel data from the backing canvas
+                var idata = bc.getImageData(0, 0, w, h);
+                var data = idata.data;
+                
+                // apply filters based on filterMode set with button
+                filters(filterMode, data);
+
+                idata.data = data;
+                // Draw the pixels onto the visible canvas
+                c.putImageData(idata, 0, 0);
+                // Start over!
+                setTimeout(function () {
+                    draw(v, c, bc, w, h);
+                }, 0);
+            }
+
+          
+            // mapping func similar to the p5 map() found here
+            // https://stackoverflow.com/questions/48802987/is-there-a-map-function-in-vanilla-javascript-like-p5-js
+            function mapRange(value, a, b, c, d) {
+            // first map value from (a..b) to (0..1)
+            value = (value - a) / (b - a);
+            // then map it from (0..1) to (c..d) and return it
+            return c + value * (d - c);
+            }
+
+            // check mouse events and pos for manipulations
+            canvas.addEventListener('mousedown', e => {
+            x = e.offsetX;
+            y = e.offsetY;
+            isMouseDown = true;
+
+            });
+
+            canvas.addEventListener('mousemove', e => {
+            if (isMouseDown === true) {
+            x = e.offsetX;
+            y = e.offsetY;
+            mappedY = mapRange(e.clientY, 0, canvas.height, 0, 255);
+            mappedX = mapRange(e.clientX, 0, canvas.width, 0, 255);
+            mappedT = mapRange(e.clientX, 0, canvas.width, 0, 0.2);
+            console.log (mappedX, mappedY, mappedT, mappedT);
+            }
+            });
+
+            window.addEventListener('dblclick', e => {
+            if (isMouseDown === true) {
+            x = 0;
+            y = 0;
+            isMouseDown = false;
+            }
+            });
+
+        });
+        
+
+        // handle manipulation filters
+        function filters(f, data) {
+            for (var i = 0; i < data.length; i += 4) {
+                switch (f) {
+                    case 1: //invert
+                        data[i] = data[i] ^ 255;
+                        data[i + 1] = data[i + 1] ^ 255;
+                        data[i + 2] = data[i + 2] ^ 255;
+                        break;
+                    case 2: //yellow pink
+                        data[i] = data[i] * mappedX;
+                        data[i + 1] = data[i + 1] + mappedY;
+                        data[i + 2] = data[i + 2] ^ 255;
+                        break;
+                    case 3: //tint
+                        data[i] = data[i + 2];
+                        data[i + 1] = mappedY;
+                        data[i + 2] = mappedX;
+                        break;
+                    case 4: // threshold
+                        let red, green, blue;
+                        red = data[i] / 255;
+                        green = data[i + 1] / 255;
+                        blue = data[i + 2] / 255;
+                        // if (red < 0.25|| green < 0.25 || blue < 0.25) {
+                        if (red < mappedT || green < mappedT || blue < mappedT) {
+                            data[i + 0] = 255;
+                            data[i + 1] = 255;
+                            data[i + 2] = 255;
+                        } else {
+                            data[i + 0] = 0;
+                            data[i + 1] = 0;
+                            data[i + 2] = 0;
+                        }
+                        break;
+                    case 5: // brightness
+                        let r = data[i];
+                        let g = data[i + 1];
+                        let b = data[i + 2];
+                        let brightness = (3 * r + 4 * g + b) >>> 3;
+                        data[i] = brightness;
+                        data[i + 1] = brightness;
+                        data[i + 2] = brightness;
+                        break;
+
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <style type="text/css">
+        #myVideo {
+            display: inline-block !important;
+            position: relative;
+            left: inherit;
+            top: inherit;
+        }
+
+        #canvasBack {
+            display: none;
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <video id="myVideo" width="400" height="300"></video>
+    <canvas id="canvas"></canvas>
+    <canvas id="canvasBack"></canvas>
+
+    <button id="inverBtn">inverse colors</button>
+    <button id="weirdBtn">weird colors</button>
+    <button id="tintBtn">tint colors</button>
+    <button id="threshBtn">threshold</button>
+    <button id="brightBtn">brightness</button>
+
+</body>
+
+</html>
