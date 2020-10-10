@@ -66,17 +66,6 @@
 			});
 
 
-			// This kicks it off
-			// 	initCapture();
-
-			// });
-
-			// function initCapture() {
-			// 	console.log("initCapture");
-
-			// The video element on the page to display the webcam
-			// let video = document.getElementById('myvideo');
-
 			// Constraints - what do we want?
 			let constraints = {
 				audio: true,
@@ -164,7 +153,6 @@
 
 
 		function draw(v, c, bc, w, h) {
-			// if(v.paused || v.ended) return false;
 			// First, draw it into the backing canvas
 			bc.drawImage(v, 0, 0, w, h);
 			// Grab the pixel data from the backing canvas
@@ -173,7 +161,6 @@
 
 			// apply filters based on filterMode set with button
 			filters(filterMode, data);
-
 
 			idata.data = data;
 			// Draw the pixels onto the visible canvas
