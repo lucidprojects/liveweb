@@ -1,0 +1,427 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script type="text/javascript" src="js/simplepeer.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <!-- not using underscore lib but leaving incase -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.11.0/underscore-min.js"></script> -->
+    <style type="text/css">
+        #myVideo,
+        #myAudio {
+            display: inline-block !important;
+            position: absolute;
+            left: inherit;
+            top: -1000px;
+        }
+
+        #canvasBack {
+            display: none;
+        }
+    </style>
+
+    <script type="text/javascript">
+        let canvas, ctx;
+        let canvasBack, cbCtx;
+        let mappedY, mappedX, mappedT;
+        let isMouseDown = false;
+        let x = 0;
+        let y = 0;
+        let filterMode = 0;
+
+        let cw, ch;
+
+        let simplepeers = [];
+        var socket;
+        var mystream;
+        var canvasStream, audioStream, videoStream, myCstream;
+
+        // wait for window to load
+        window.addEventListener('load', function () {
+
+            // set up video, canvas, buttons
+            let myVideo = document.getElementById('myVideo');
+            let canvas = document.getElementById('canvas');
+            let ctx = canvas.getContext('2d');
+
+            let canvasBack = document.getElementById('canvasBack');
+            var cbCtx = canvasBack.getContext('2d');
+
+            let inverseBtn = document.getElementById('inverBtn');
+            inverseBtn.addEventListener('click', function () {
+                filterMode = 1
+            });
+            let weirdCBtn = document.getElementById('weirdBtn');
+            weirdCBtn.addEventListener('click', function () {
+                filterMode = 2
+            });
+            let tintBtn = document.getElementById('tintBtn');
+            tintBtn.addEventListener('click', function () {
+                filterMode = 3
+            });
+            let threshBtn = document.getElementById('threshBtn');
+            threshBtn.addEventListener('click', function () {
+                filterMode = 4
+            });
+            let brightBtn = document.getElementById('brightBtn');
+            brightBtn.addEventListener('click', function () {
+                filterMode = 5
+            });
+
+            let normBtn = document.getElementById('normBtn');
+            normBtn.addEventListener('click', function () {
+                filterMode = 0
+            });
+
+            // set up some initial canvas vars
+            cw = myVideo.clientWidth;
+            ch = myVideo.clientHeight;
+            canvas.width = cw;
+            canvas.height = ch;
+            canvasBack.width = cw;
+            canvasBack.height = ch;
+
+            // set up some initial Media Stream vars - these are important to happen before we getUserMedia
+            canvasStream = canvas.captureStream(25); // 25 FPS
+            myCstream = new MediaStream;
+
+            // simplified canvas maniuplation func from http://html5doctor.com/video-canvas-magic/
+            // modified to have mulitple filters
+
+            function draw(v, c, bc, w, h) {
+                // First, draw it into the backing canvas
+                bc.drawImage(v, 0, 0, w, h);
+                // Grab the pixel data from the backing canvas
+                var idata = bc.getImageData(0, 0, w, h);
+                var data = idata.data;
+
+                // apply filters based on filterMode set with button
+                filters(filterMode, data);
+
+                idata.data = data;
+                // Draw the pixels onto the visible canvas
+                c.putImageData(idata, 0, 0);
+                // Start over!
+                setTimeout(function () {
+                    draw(v, c, bc, w, h);
+                }, 0);
+            }
+
+            // Constraints - what do we want?
+            let constraints = {
+                audio: true,
+                video: true
+            }
+
+            // Prompt the user for permission, get the stream
+            navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+                    /* Use the stream */
+
+                    // Global object
+                    mystream = stream;
+
+                    // separate audio and video so we can add audio to canvas prior to streaming to peers    
+                    audioStream = new MediaStream(stream.getAudioTracks());
+                    videoStream = new MediaStream(stream.getVideoTracks());
+
+                    // Attach to our video object
+                    myVideo.srcObject = stream;
+
+                    // Wait for the audio and video streams to load enough to play
+                    myAudio.srcObject = audioStream;
+                    myAudio.muted = true;
+                    myAudio.onloadedmetadata = function (e) {
+                        myAudio.play();
+                    };
+
+                    myVideo.srcObject = videoStream;
+                    myVideo.onloadedmetadata = function (e) {
+                        myVideo.play();
+                        checkMyVidLoaded();
+                        // once stream as loaded add canvasStream and audioStream to myCstream (my Combinded stream)
+                        myCstream.addTrack(canvasStream.getTracks()[0]);
+                        myCstream.addTrack(audioStream.getTracks()[0]);
+                    };
+
+                    // Now setup socket
+                    setupSocket();
+                })
+                .catch(function (err) {
+                    /* Handle the error */
+                    alert(err);
+                });
+
+            function checkMyVidLoaded() {
+                myVideo.addEventListener('play', function () {
+                    draw(myVideo, ctx, cbCtx, cw, ch);
+                }, false);
+            }
+
+            // mapping func similar to the p5 map() found here
+            // https://stackoverflow.com/questions/48802987/is-there-a-map-function-in-vanilla-javascript-like-p5-js
+            function mapRange(value, a, b, c, d) {
+                // first map value from (a..b) to (0..1)
+                value = (value - a) / (b - a);
+                // then map it from (0..1) to (c..d) and return it
+                return c + value * (d - c);
+            }
+
+            // check mouse events and pos for manipulations
+            canvas.addEventListener('mousedown', e => {
+                x = e.offsetX;
+                y = e.offsetY;
+                isMouseDown = true;
+
+            });
+
+            canvas.addEventListener('mousemove', e => {
+                if (isMouseDown === true) {
+                    x = e.offsetX;
+                    y = e.offsetY;
+                    mappedY = mapRange(e.clientY, 0, canvas.height, 0, 255);
+                    mappedX = mapRange(e.clientX, 0, canvas.width, 0, 255);
+                    mappedT = mapRange(e.clientX, 0, canvas.width, 0, 0.9);
+                    // console.log(mappedX, mappedY, mappedT, mappedT);
+                }
+            });
+
+            window.addEventListener('dblclick', e => {
+                if (isMouseDown === true) {
+                    x = 0;
+                    y = 0;
+                    isMouseDown = false;
+                }
+            });
+
+        });
+
+
+        function setupSocket() {
+            socket = io.connect();
+
+            socket.on('connect', function () {
+                console.log("Socket Connected**");
+                console.log("My socket id: ", socket.id);
+
+                // Tell the server we want a list of the other users
+                socket.emit('list');
+            });
+
+            socket.on('disconnect', function (data) {
+                console.log("Socket disconnected");
+            });
+
+            socket.on('peer_disconnect', function (data) {
+                console.log("simplepeer has disconnected " + data);
+                for (let i = 0; i < simplepeers.length; i++) {
+                    if (simplepeers[i].socket_id == data) {
+                        console.log("Removing simplepeer: " + i);
+                        simplepeers.splice(i, 1);
+                        // should also remove video from page.
+                        let tempStream = document.getElementById(data);
+                        console.log("tempStream= " + tempStream);
+                        tempStream.remove();
+                    }
+                }
+            });
+
+            // Receive listresults from server
+            socket.on('listresults', function (data) {
+                console.log(data);
+                for (let i = 0; i < data.length; i++) {
+                    // Make sure it's not us
+                    if (data[i] != socket.id) {
+
+                        // create a new simplepeer and we'll be the "initiator"			
+                        let simplepeer = new SimplePeerWrapper(
+                            // true, data[i], socket, mystream 
+                            true, data[i], socket, myCstream // send combined stream
+                        );
+
+                        // Push into our array
+                        simplepeers.push(simplepeer);
+                    }
+                }
+            });
+
+            socket.on('signal', function (to, from, data) {
+
+                console.log("Got a signal from the server: ", to, from, data);
+
+                // to should be us
+                if (to != socket.id) {
+                    console.log("Socket IDs don't match");
+                }
+
+                // Look for the right simplepeer in our array
+                let found = false;
+                for (let i = 0; i < simplepeers.length; i++) {
+
+                    if (simplepeers[i].socket_id == from) {
+                        console.log("Found right object");
+                        // Give that simplepeer the signal
+                        simplepeers[i].inputsignal(data);
+                        found = true;
+                        break;
+                    }
+
+                }
+                if (!found) {
+                    console.log("Never found right simplepeer object");
+                    // Let's create it then, we won't be the "initiator"
+                    let simplepeer = new SimplePeerWrapper(
+                        // false, from, socket, mystream  
+                        false, from, socket, myCstream // send combined stream
+                    );
+
+                    // Push into our array
+                    simplepeers.push(simplepeer);
+
+                    // Tell the new simplepeer that signal
+                    simplepeer.inputsignal(data);
+                }
+            });
+
+        }
+
+        // A wrapper for simplepeer as we need a bit more than it provides
+        class SimplePeerWrapper {
+
+            constructor(initiator, socket_id, socket, stream) {
+                this.simplepeer = new SimplePeer({
+                    initiator: initiator,
+                    trickle: false
+                });
+
+                // Their socket id, our unique id for them
+                this.socket_id = socket_id;
+
+                // Socket.io Socket
+                this.socket = socket;
+
+                // Our video stream - need getters and setters for this
+                this.stream = stream;
+
+                // simplepeer generates signals which need to be sent across socket
+                this.simplepeer.on('signal', data => {
+                    this.socket.emit('signal', this.socket_id, this.socket.id, data);
+                });
+
+                // When we have a connection, send our stream
+                this.simplepeer.on('connect', () => {
+                    console.log('CONNECT')
+                    console.log(this.simplepeer);
+                    //p.send('whatever' + Math.random())
+
+                    // Let's give them our stream
+                    this.simplepeer.addStream(stream);
+
+                    // testing to try to see if the sending stream has "tracks"
+                    let myTracks = stream.getTracks();
+                    console.dir(myTracks);
+
+                    console.log("Send our stream");
+                });
+
+                // Stream coming in to us
+                this.simplepeer.on('stream', stream => {
+                    console.log('Incoming Stream');
+                    console.log("Incoming stream" + stream);
+
+                    // testing to try to see if the received stream has "tracks"
+                    let peerTracks = stream.getTracks();
+                    console.dir(peerTracks);
+
+                    // This should really be a callback
+                    // Create a video object
+                    let ovideo = document.createElement("VIDEO");
+                    ovideo.id = this.socket_id;
+                    ovideo.srcObject = stream;
+                    ovideo.muted = false;
+                    ovideo.onloadedmetadata = function (e) {
+                        ovideo.play();
+                    };
+                    document.body.appendChild(ovideo);
+                    console.log(ovideo);
+                });
+            }
+
+            inputsignal(sig) {
+                this.simplepeer.signal(sig);
+            }
+
+        }
+
+        // handle manipulation filters
+        function filters(f, data) {
+            for (var i = 0; i < data.length; i += 4) {
+                switch (f) {
+                    case 0: //normal
+                        data[i] = data[i];
+                        data[i + 1] = data[i + 1];
+                        data[i + 2] = data[i + 2];
+                        break;
+                    case 1: //invert
+                        data[i] = data[i] ^ 255;
+                        data[i + 1] = data[i + 1] ^ 255;
+                        data[i + 2] = data[i + 2] ^ 255;
+                        break;
+                    case 2: //yellow pink
+                        data[i] = data[i] * mappedX;
+                        data[i + 1] = data[i + 1] + mappedY;
+                        data[i + 2] = data[i + 2] ^ 255;
+                        break;
+                    case 3: //tint
+                        data[i] = data[i + 2];
+                        data[i + 1] = mappedY;
+                        data[i + 2] = mappedX;
+                        break;
+                    case 4: // threshold
+                        let red, green, blue;
+                        red = data[i] / 255;
+                        green = data[i + 1] / 255;
+                        blue = data[i + 2] / 255;
+                        // if (red < 0.25|| green < 0.25 || blue < 0.25) {
+                        if (red < mappedT || green < mappedT || blue < mappedT) {
+                            data[i + 0] = 255;
+                            data[i + 1] = 255;
+                            data[i + 2] = 255;
+                        } else {
+                            data[i + 0] = 0;
+                            data[i + 1] = 0;
+                            data[i + 2] = 0;
+                        }
+                        break;
+                    case 5: // brightness
+                        let r = data[i];
+                        let g = data[i + 1];
+                        let b = data[i + 2];
+                        let brightness = (3 * r + 4 * g + b) >>> 3;
+                        data[i] = brightness;
+                        data[i + 1] = brightness;
+                        data[i + 2] = brightness;
+                        break;
+
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <video id="myVideo" width="400" height="300"></video>
+        <canvas id="canvas"></canvas>
+        <canvas id="canvasBack"></canvas>
+        <audio id="myAudio" controls autoplay></audio><br>
+        <button id="inverBtn">inverse</button>
+        <button id="weirdBtn">weird</button>
+        <button id="tintBtn">tint</button>
+        <button id="threshBtn">threshold</button>
+        <button id="brightBtn">brightness</button>
+        <button id="normBtn">normal</button>
+    </div>
+
+</body>
+
+</html>

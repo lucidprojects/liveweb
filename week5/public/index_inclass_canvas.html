@@ -65,6 +65,13 @@
 				filterMode = 5
 			});
 
+			cw = myVideo.clientWidth;
+			ch = myVideo.clientHeight;
+			canvas.width = cw;
+			canvas.height = ch;
+			canvasBack.width = cw;
+			canvasBack.height = ch;
+			canvasStream = canvas.captureStream(25); // 25 FPS
 
 			// Constraints - what do we want?
 			let constraints = {
@@ -100,14 +107,14 @@
 				myVideo.addEventListener('play', function () {
 
 
-					cw = myVideo.clientWidth;
-					ch = myVideo.clientHeight;
-					canvas.width = cw;
-					canvas.height = ch;
-					canvasBack.width = cw;
-					canvasBack.height = ch;
+					// cw = myVideo.clientWidth;
+					// ch = myVideo.clientHeight;
+					// canvas.width = cw;
+					// canvas.height = ch;
+					// canvasBack.width = cw;
+					// canvasBack.height = ch;
 					draw(myVideo, ctx, cbCtx, cw, ch);
-					canvasStream = canvas.captureStream(25); // 25 FPS
+					// canvasStream = canvas.captureStream(25); // 25 FPS
 				}, false);
 			}
 
