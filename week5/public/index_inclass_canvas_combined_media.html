@@ -138,7 +138,7 @@
                     myVideo.onloadedmetadata = function (e) {
                         myVideo.play();
                         checkMyVidLoaded();
-                        // once stream as loaded add canvasStream and audioStream to myCstream (my Combinded stream)
+                        // once stream has loaded add canvasStream and audioStream to myCstream (my Combinded stream)
                         myCstream.addTrack(canvasStream.getTracks()[0]);
                         myCstream.addTrack(audioStream.getTracks()[0]);
                     };
