@@ -26,26 +26,33 @@
     position: absolute;
     z-index: 1500;
     top: 9px;
-    left: 104px;
+    left: 65px;
 }
 
 #tintBtn {
     position: absolute;
     z-index: 1500;
     top: 9px;
-    left: 191px;
+    left: 113px;
 }
 #threshBtn {
     position: absolute;
     z-index: 1500;
     top: 9px;
-    left: 264px;
+    left: 147px;
 }
 #brightBtn {
     position: absolute;
     z-index: 1500;
     top: 9px;
-    left: 335;
+    left: 218px;
+}
+
+#normBtn {
+    position: absolute;
+    z-index: 1500;
+    top: 9px;
+    left: 297px;
 }
 
 #myVideo {
