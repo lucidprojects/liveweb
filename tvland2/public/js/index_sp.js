@@ -194,13 +194,18 @@
 
      socket.on('peer_disconnect', function (data) {
          console.log("simplepeer has disconnected " + data);
+         document.getElementById(data).remove();
+
+        //  let tempDiv = document.getElementById(data);
+        //  console.log("going to remove " + tempDiv); 
+        //  tempDiv.remove();
+
          for (let i = 0; i < simplepeers.length; i++) {
              if (simplepeers[i].socket_id == data) {
                  console.log("Removing simplepeer: " + i);
                  simplepeers.splice(i, 1);
-
-                 // doesn't always remove on page refresh
-                 document.getElementById(data).remove();
+                // doesn't always remove on page refresh
+                // document.getElementById(data).remove();
              }
          }
      });
