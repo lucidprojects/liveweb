@@ -1,0 +1,130 @@
+body {
+    background-image: url(/images/bg.jpg);
+    background-size: cover;
+
+}
+
+#local_tv_ctnr {
+    position: absolute;
+}
+
+#canvas {
+    position: relative;
+    z-index: 50;
+    top: 20px;
+    left: 10px;
+}
+
+.peerDiv {
+    z-index: 500;
+}
+
+
+#inverBtn {
+    position: absolute;
+    z-index: 150;
+    top: 164px;
+    left: 433px;
+    width: 89px;
+}
+
+#weirdBtn {
+    position: absolute;
+    z-index: 150;
+    top: 9px;
+    left: 65px;
+    top: 184px;
+    left: 433px;
+    width: 89px;
+}
+
+#tintBtn {
+    position: absolute;
+    z-index: 150;
+    top: 9px;
+    left: 113px;
+    top: 204px;
+    left: 433px;
+    width: 89px;
+}
+
+#threshBtn {
+    position: absolute;
+    z-index: 150;
+    top: 9px;
+    left: 147px;
+    top: 224px;
+    left: 433px;
+    width: 89px;
+}
+
+#brightBtn {
+    position: absolute;
+    z-index: 150;
+    top: 244px;
+    left: 433px;
+    width: 89px;
+
+}
+
+#normBtn {
+    position: absolute;
+    z-index: 150;
+    top: 264px;
+    left: 433px;
+    width: 89px;
+}
+
+#myVideo {
+    position: absolute;
+    top: 210px;
+    left: 229px;
+    /* width: 270px;
+    height: 210px; */
+    z-index: 100;
+    display: none;
+}
+
+#maintv {
+    position: absolute;
+    width: 589px;
+    left: -33px;
+    top: 1px;
+    pointer-events: none;
+    z-index: 75;
+}
+
+#myVideo,
+#myAudio {
+    display: inline-block !important;
+    position: absolute;
+    left: inherit;
+    top: -1000px;
+}
+
+#canvasBack {
+    display: none;
+}
+
+.peerTv {
+    position: absolute;
+    z-index: 500;
+    width: 100%;
+}
+
+.peerTvImg1,
+.peerTvImg2,
+.peerTvImg3 {
+    z-index: 1000;
+    height: auto;
+    position: absolute;
+}
+
+.peerTvImg1,
+.peerTvImg3 {
+    width: 120%;
+}
+
+.peerTvImg2 {
+    width: 140%;
+}
