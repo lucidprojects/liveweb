@@ -1,0 +1,127 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
+        integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css" />
+    <script type="text/javascript" src="js/simplepeer.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/tvland3_index_sp.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/cookie_js@1.2.2/cookie.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/interactjs@1.10.0/dist/interact.min.js"></script>
+    <script type="text/javascript">
+    interact('.rotate-target').on('hold', function (event) {
+        if (angle == 0) angle = 90;
+        //event.currentTarget.classList.toggle('rotate')
+        event.currentTarget.style.transform = 'rotate(' + angle + 'deg)';
+        // event.currentTarget.classList.remove('large')
+        angle += 90;
+        if (angle > 361) angle = 0;
+    })
+
+    let liveWebUser = cookie.get('liveWebUser');
+    if (!liveWebUser) {
+        //prompt them to set a user if no cookie found
+        liveWebUser = prompt('Choose a username:');
+        if (!liveWebUser) {
+            alert('Something\'s wrong here');
+        } else {
+            // set cookie for username
+            cookie.set('liveWebUser', liveWebUser);
+            //  console.log("set liveWebUser = " + liveWebUser);
+        }
+    }
+
+    let chatOpen = false;
+
+    function openRightMenu() {
+        if (chatOpen == false) {
+            document.getElementById("rightMenu").style.display = "block";
+            chatOpen = true;
+        } else {
+            document.getElementById("rightMenu").style.display = "none";
+            chatOpen = false;
+        }
+    }
+
+    function closeRightMenu() {
+        document.getElementById("rightMenu").style.display = "none";
+        chatOpen = false;
+    }
+
+    var width = window.innerWidth;
+    var heightMinusBtm;
+    // var messagesHeight = document.getElementById('messages').clientHeight;
+    var messagesHeightjq = $('#messages').height();
+
+    var messagesHeightAdj = () => {
+        if (width > 499) heightMinusBtm = $(window).height() - 100;
+        else heightMinusBtm = $(window).height() - 150;
+        console.log(heightMinusBtm);
+        if ($('#messages').height() > heightMinusBtm) $('#messages').css('height', heightMinusBtm);
+    }
+
+    $(document).ready(function () {
+        messagesHeightAdj();
+        if (messagesHeightjq > 50) console.log('messagesHeight = ' + messagesHeight +
+            ' messagesHeightjq = ' + messagesHeightjq);
+    });
+
+    $(window).resize(function () {
+        messagesHeightAdj();
+    });
+    </script>
+
+</head>
+
+<body id="drop-region">
+    <i id="question" class="fas fa-question"></i>
+    <img id="showMe" src="images/snowme.png" class="left">
+    <button class="chat-button xlarge right" onclick="openRightMenu()"><i class="fas fa-comment-dots"></i></button>
+    <div class="sidebar bar-block card animate-right" style="display:none;right:0;" id="rightMenu">
+        <button onclick="closeRightMenu()" class="bar-item chat-button chat-large">Close &times;</button>
+        <div class="main">
+
+            <section id="messages">
+
+            </section>
+            <div id="formElements">
+                <input type="text" placeholder="chat" id="message" name="message" />
+                <button onclick="sendmessage(document.getElementById('message').value, liveWebUser);">SEND</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div>
+        <video id="myVideo" width="160" height="120"></video>
+        <audio id="myAudio" controls autoplay></audio><br>
+
+        <div id="local_tv_ctnr" class="rotate-target">
+            <img src="tvs/tv_local.png" id="maintv">
+            <canvas id="canvas"></canvas>
+            <canvas id="canvasBack"></canvas>
+            <button id="inverBtn">inverse</button>
+            <button id="weirdBtn">weird</button>
+            <button id="tintBtn">tint</button>
+            <button id="threshBtn">threshold</button>
+            <button id="brightBtn">brightness</button>
+            <button id="normBtn">normal</button>
+            <button id="muteBtn"><i id="muteSym" class="fas fa-microphone-slash"></i>mute</button>
+            <button id="hideBtn">hide</button>
+        </div>
+
+    </div>
+
+    <script type="text/javascript" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script type="text/javascript" src="https://unpkg.com/tippy.js@6"></script>
+    <script type="text/javascript" src="js/tippy_rules.js"></script>
+  
+</body>
+
+
+
+
+</html>

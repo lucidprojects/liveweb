@@ -1,0 +1,386 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
+        integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    <script type="text/javascript" src="js/simplepeer.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/tvland3_index_sp.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://unpkg.com/cookie_js@1.2.2/cookie.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/interactjs@1.10.0/dist/interact.min.js"></script>
+
+    <script type="text/javascript">
+        // where files are dropped + file selector is opened
+
+        window.addEventListener('load', function () {
+            var messagesHeight = document.getElementById('messages').clientHeight;
+            var dropRegion = document.getElementById("drop-region");
+
+            function preventDefault(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            dropRegion.addEventListener('dragenter', preventDefault, false)
+            dropRegion.addEventListener('dragleave', preventDefault, false)
+            dropRegion.addEventListener('dragover', preventDefault, false)
+            dropRegion.addEventListener('drop', preventDefault, false)
+
+
+            function handleDrop(e) {
+                var dt = e.dataTransfer,
+                    files = dt.files;
+
+                if (files.length) {
+
+                    handleFiles(files);
+
+                } else {
+                    // check for img
+                    var html = dt.getData('text/html'),
+                        match = html && /\bsrc="?([^"\s]+)"?\s*/.exec(html),
+                        url = match && match[1];
+
+                    // if (url) {
+                    //     uploadImageFromURL(url);
+                    //     return;
+                    // }
+
+                }
+
+            }
+
+            dropRegion.addEventListener('drop', handleDrop, false);
+
+            function handleFiles(files) {
+                for (var i = 0, len = files.length; i < len; i++) {
+                    if (validateImage(files[i]))
+                        previewAnduploadImage(files[i]);
+                }
+            }
+
+            function validateImage(image) {
+                // check the type
+                var validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (validTypes.indexOf(image.type) === -1) {
+                    alert("Invalid File Type");
+                    return false;
+                }
+
+                // check the size
+                var maxSizeInBytes = 10e6; // 10MB
+                if (image.size > maxSizeInBytes) {
+                    alert("File too large");
+                    return false;
+                }
+
+                return true;
+
+            }
+
+            function previewAnduploadImage(image) {
+
+                // read the image...
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    // 		img.src = e.target.result;
+                    dropRegion.style.backgroundImage = "url(" + e.target.result + ")";
+                }
+                reader.readAsDataURL(image);
+
+            }
+
+        })
+
+
+
+        let angle = 90;
+
+        interact('.rotate-target')
+            .on('hold', function (event) {
+                if (angle == 0) angle = 90;
+                //event.currentTarget.classList.toggle('rotate')
+                event.currentTarget.style.transform = 'rotate(' + angle + 'deg)';
+                // event.currentTarget.classList.remove('large')
+                angle += 90;
+                if (angle > 361) angle = 0;
+            })
+
+        let liveWebUser = cookie.get('liveWebUser');
+        if (!liveWebUser) {
+            //prompt them to set a user if no cookie found
+            liveWebUser = prompt('Choose a username:');
+            if (!liveWebUser) {
+                alert('Something\'s wrong here');
+            } else {
+                // set cookie for username
+                cookie.set('liveWebUser', liveWebUser);
+                //  console.log("set liveWebUser = " + liveWebUser);
+            }
+        }
+
+        let chatOpen = false;
+
+        function openRightMenu() {
+            if (chatOpen == false) {
+                document.getElementById("rightMenu").style.display = "block";
+                chatOpen = true;
+            } else {
+                document.getElementById("rightMenu").style.display = "none";
+                chatOpen = false;
+            }
+        }
+
+        function closeRightMenu() {
+            document.getElementById("rightMenu").style.display = "none";
+            chatOpen = false;
+        }
+
+        var width = window.innerWidth;
+        var heightMinusBtm;
+        // var messagesHeight = document.getElementById('messages').clientHeight;
+        var messagesHeightjq = $('#messages').height();
+
+        var messagesHeightAdj = () => {
+            if (width > 499) heightMinusBtm = $(window).height() - 100;
+            else heightMinusBtm = $(window).height() - 150;
+            console.log(heightMinusBtm);
+            if ($('#messages').height() > heightMinusBtm) $('#messages').css('height', heightMinusBtm);
+        }
+
+        $(document).ready(function () {
+            messagesHeightAdj();
+            if (messagesHeightjq > 50) console.log('messagesHeight = ' + messagesHeight +
+                ' messagesHeightjq = ' + messagesHeightjq);
+        });
+
+        $(window).resize(function () {
+            messagesHeightAdj();
+        });
+    </script>
+
+    <style type="text/css">
+        body {
+            font-family: Helvetica, Arial, Sans, sans-serif;
+        }
+
+        .resizable {
+            width: 500px;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 1rem;
+            background-color: #29e;
+            color: white;
+            font-size: 20px;
+            font-family: sans-serif;
+
+            touch-action: none;
+
+            /* This makes things *much* easier */
+            box-sizing: border-box;
+        }
+
+        #myVid {
+            width: 100%;
+        }
+
+        .rotate {
+            -webkit-transform: rotate(90deg);
+            transform: rotate(90deg);
+        }
+
+        /*sidebar css */
+
+        .fa,
+        .fas {
+            font-weight: 900;
+            color: white;
+            font-size: 28px;
+        }
+
+        .right {
+            float: right !important;
+        }
+
+        .chat-button {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .chat-button {
+            border: none;
+            display: inline-block;
+            padding: 8px 16px;
+            vertical-align: middle;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            background-color: inherit;
+            text-align: center;
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+            z-index: 2000;
+        }
+
+        .chat-button {
+            -webkit-appearance: button;
+        }
+
+        .chat-button {
+            text-transform: none;
+        }
+
+        .chat-button {
+            overflow: visible;
+        }
+
+        .chat-button {
+            font: inherit;
+            margin: 0;
+        }
+
+        .animate-right {
+            position: relative;
+            animation: animateright 0.4s;
+        }
+
+        .animate-right {
+            position: relative;
+            animation: animateright 0.4s
+        }
+
+        @keyframes animateright {
+            from {
+                right: -300px;
+                opacity: 0
+            }
+
+            to {
+                right: 0;
+                opacity: 1
+            }
+        }
+
+
+        .card,
+        .card-2 {
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 450px;
+            background-color: rgba(255, 255, 255, 0.3);
+            position: fixed !important;
+            z-index: 1;
+            overflow: auto;
+            border: thin grey solid;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+        }
+
+
+        .localmsg,
+        .remotemsg {
+            padding: 5px;
+        }
+
+        #message {
+            width: 82%;
+            margin-left: 11px;
+        }
+
+        #messages {
+            display: flow-root;
+            /* border: thin grey solid;
+            border-radius: 20px; */
+            padding: 10px;
+            min-height: 100px;
+            max-height: 100%;
+            overflow-y: scroll;
+        }
+
+        #messages br:nth-child(1) {
+            display: none;
+        }
+
+
+        .user {
+            font-weight: 600;
+        }
+
+        .localmsg {
+            background-color: lightgreen;
+            border-radius: 5px;
+            float: left;
+            display: block;
+            clear: both;
+            margin-top: 10px;
+
+        }
+
+        .remotemsg {
+            background-color: lightskyblue;
+            border-radius: 5px;
+            text-align: right;
+            float: right;
+            display: block;
+            clear: both;
+            margin-top: 10px;
+        }
+
+        #formElements {
+            clear: both;
+        }
+
+
+        /*end sidebar css */
+    </style>
+
+</head>
+
+<body id="drop-region">
+    <button class="chat-button teal xlarge right" onclick="openRightMenu()"><i class="fas fa-comment-dots"></i></button>
+    <div class="sidebar bar-block card animate-right" style="display:none;right:0;" id="rightMenu">
+        <button onclick="closeRightMenu()" class="bar-item chat-button chat-large">Close &times;</button>
+        <div class="main">
+
+            <section id="messages">
+
+            </section>
+            <div id="formElements">
+                <input type="text" placeholder="chat" id="message" name="message" />
+                <button onclick="sendmessage(document.getElementById('message').value, liveWebUser);">SEND</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div>
+        <video id="myVideo" width="400" height="300"></video>
+        <audio id="myAudio" controls autoplay></audio><br>
+
+        <div id="local_tv_ctnr" class="rotate-target">
+            <img src="tvs/tv_local.png" id="maintv">
+            <canvas id="canvas"></canvas>
+            <canvas id="canvasBack"></canvas>
+            <button id="inverBtn">inverse</button>
+            <button id="weirdBtn">weird</button>
+            <button id="tintBtn">tint</button>
+            <button id="threshBtn">threshold</button>
+            <button id="brightBtn">brightness</button>
+            <button id="normBtn">normal</button>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

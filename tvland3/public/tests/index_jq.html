@@ -1,0 +1,66 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script type="text/javascript" src="js/simplepeer.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/tvland3_index_sp.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script type="text/javascript">
+        var rotation = 0;
+
+        $(function () {
+            $('.rotate').click(function () {
+                rotation += 5;
+                $(this).css({
+                    '-webkit-transform': 'rotate(' + rotation + 'deg)',
+                    '-moz-transform': 'rotate(' + rotation + 'deg)',
+                    '-ms-transform': 'rotate(' + rotation + 'deg)',
+                    'transform': 'rotate(' + rotation + 'deg)'
+                });
+            });
+
+
+            $('.rotate canvas button').each(function () {
+                $(this).resizable({
+                    alsoResize: $(this).find('canvas'),
+                    aspectRatio: true,
+                    maxHeight: 140
+                });
+
+            });
+
+
+            $(".resizable").resizable();
+
+
+        });
+    </script>
+
+</head>
+
+<body>
+    <div>
+        <video id="myVideo" width="400" height="300"></video>
+        <audio id="myAudio" controls autoplay></audio><br>
+
+        <div id="local_tv_ctnr" class="rotate resizable ui-widget-content">
+            <img src="tvs/tv_local.png" id="maintv">
+            <canvas id="canvas"></canvas>
+            <canvas id="canvasBack"></canvas>
+            <button id="inverBtn">inverse</button>
+            <button id="weirdBtn">weird</button>
+            <button id="tintBtn">tint</button>
+            <button id="threshBtn">threshold</button>
+            <button id="brightBtn">brightness</button>
+            <button id="normBtn">normal</button>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

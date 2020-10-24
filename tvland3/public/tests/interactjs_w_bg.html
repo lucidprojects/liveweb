@@ -1,0 +1,158 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script type="text/javascript" src="js/simplepeer.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/tvland3_index_sp.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/interactjs@1.10.0/dist/interact.min.js"></script>
+
+    <script type="text/javascript">
+        // where files are dropped + file selector is opened
+
+        window.addEventListener('load', function () {
+
+            var dropRegion = document.getElementById("drop-region");
+
+            function preventDefault(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            dropRegion.addEventListener('dragenter', preventDefault, false)
+            dropRegion.addEventListener('dragleave', preventDefault, false)
+            dropRegion.addEventListener('dragover', preventDefault, false)
+            dropRegion.addEventListener('drop', preventDefault, false)
+
+
+            function handleDrop(e) {
+                var dt = e.dataTransfer,
+                    files = dt.files;
+
+                if (files.length) {
+
+                    handleFiles(files);
+
+                } else {
+                    // check for img
+                    var html = dt.getData('text/html'),
+                        match = html && /\bsrc="?([^"\s]+)"?\s*/.exec(html),
+                        url = match && match[1];
+
+                    if (url) {
+                        uploadImageFromURL(url);
+                        return;
+                    }
+
+                }
+
+            }
+
+            dropRegion.addEventListener('drop', handleDrop, false);
+
+            function handleFiles(files) {
+                for (var i = 0, len = files.length; i < len; i++) {
+                    if (validateImage(files[i]))
+                        previewAnduploadImage(files[i]);
+                }
+            }
+
+            function validateImage(image) {
+                // check the type
+                var validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (validTypes.indexOf(image.type) === -1) {
+                    alert("Invalid File Type");
+                    return false;
+                }
+
+                // check the size
+                var maxSizeInBytes = 10e6; // 10MB
+                if (image.size > maxSizeInBytes) {
+                    alert("File too large");
+                    return false;
+                }
+
+                return true;
+
+            }
+
+            function previewAnduploadImage(image) {
+
+                // read the image...
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    // 		img.src = e.target.result;
+                    dropRegion.style.backgroundImage = "url(" + e.target.result + ")";
+                }
+                reader.readAsDataURL(image);
+
+            }
+
+        })
+
+
+
+        let angle = 90;
+
+        interact('.rotate-target')
+            .on('hold', function (event) {
+                if(angle == 0) angle = 90;
+                //event.currentTarget.classList.toggle('rotate')
+                event.currentTarget.style.transform = 'rotate(' + angle + 'deg)';
+                // event.currentTarget.classList.remove('large')
+                angle+=90;
+                if(angle > 361) angle = 0;
+            })
+    </script>
+
+    <style type="text/css">
+        .resizable {
+            width: 500px;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 1rem;
+            background-color: #29e;
+            color: white;
+            font-size: 20px;
+            font-family: sans-serif;
+
+            touch-action: none;
+
+            /* This makes things *much* easier */
+            box-sizing: border-box;
+        }
+
+        #myVid {
+            width: 100%;
+        }
+
+        .rotate {
+            -webkit-transform: rotate(90deg);
+            transform: rotate(90deg);
+        }
+    </style>
+
+</head>
+
+<body id="drop-region">
+    <div>
+        <video id="myVideo" width="400" height="300"></video>
+        <audio id="myAudio" controls autoplay></audio><br>
+
+        <div id="local_tv_ctnr" class="rotate-target">
+            <img src="tvs/tv_local.png" id="maintv">
+            <canvas id="canvas"></canvas>
+            <canvas id="canvasBack"></canvas>
+            <button id="inverBtn">inverse</button>
+            <button id="weirdBtn">weird</button>
+            <button id="tintBtn">tint</button>
+            <button id="threshBtn">threshold</button>
+            <button id="brightBtn">brightness</button>
+            <button id="normBtn">normal</button>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
