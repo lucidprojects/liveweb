@@ -1,0 +1,120 @@
+<html>
+
+<head>
+	<link rel="stylesheet" href="css/bootstrap.css">
+	</link>
+	<link rel="stylesheet"
+		href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/ui-lightness/jquery-ui.css">
+	<link rel="stylesheet" href="css/bootstrap-responsive.css">
+	</link>
+	<link rel="stylesheet"
+		href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/ui-lightness/jquery-ui.css">
+	<link rel="stylesheet" href="css/demo.css">
+	</link>
+	<link rel="stylesheet" href="css/style.css">
+	<!-- <style type="text/css">
+		body {
+			background-image: url(/images/curtain_bg.jpg);
+			background-size: cover;
+		}
+
+		#main_ctnr {
+			width: 425px;
+			margin: 130px auto 0 auto;
+			color: #ffffff;
+		}
+
+		#hdrMsg {
+			text-align: center;
+			font-size: 22px;
+			margin: 5px;
+			font-family: sans-serif;
+		}
+
+		.roulette {
+			height: 300px;
+		}
+
+		#rouletteBtn,
+		#startBtn,
+		#stopBtn {
+			display: none;
+		}
+
+		#myVideo {
+			padding-left: 5px;
+			display: block;
+
+		}
+
+		canvas,
+		#newImg,
+		#myImg,
+		#stopBtn {
+			position: absolute;
+			top: -1000px;
+		}
+
+
+		#roulette_row {
+			position: relative;
+			top: -1000px;
+			left: 5px;
+		}
+
+		.movieMsgClass {
+			position: relative;
+			z-index: 1000;
+			width: 400;
+		}
+
+		.btn {
+			width: 99px;
+		}
+	</style> -->
+
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-2.2.4.min.js"
+		integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+	<script src="js/roulette_function.js"></script>
+	<script src="js/roul_settings_func.js"></script>
+	<!-- <script src="js/roulette.js"></script>
+	<script src="js/demo.js"></script> -->
+	<script src="js/index.js"></script>
+	
+</head>
+
+<body>
+	<div id="main_ctnr">
+		<div id="hdrMsg">Record a 10 Second Message</div>
+		<video id="myvideo" width="400" height="300" muted></video>
+
+		<canvas id="canvas"></canvas>
+		<img id="myImg">
+		<div id="btnRow1" class="btnRowCtnr">
+			<div class="btn_container">
+				<p>
+					<input type="button" value="record" id="myvideorbutton" data-delay="5"
+						class="btn btn-large btn-primary"></input>
+					<button id="rouletteBtn" class="btn btn-large btn-primary">roulette</button>
+					<button id="startBtn" class="btn btn-large btn-primary start"> SPIN </button>
+					<button id="stopBtn" class="stop btn-large btn btn-warning"> STOP </button>
+				</p>
+			</div>
+		</div>
+		<div id="roulette_row" class="row">
+			<div class="span4">
+				<div id="roulette_container" class="roulette_container">
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	</div>
+
+</body>
+
+</html>
