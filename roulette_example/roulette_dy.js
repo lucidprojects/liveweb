@@ -24,8 +24,8 @@ let ctntHeight = 128;  // use this to control disatnce of spin and stopping
 			imageCount : 5,
 			$images : null,
 			originalStopImageNumber : null,
-			totalHeight : null,
-			// totalHeight : 640,  // not hard coding it here makes the transform go on forever
+			// totalHeight : null,
+			totalHeight : 640,  // not hard coding it here makes the transform go on forever
 			topPosition : 0,
 
 			maxDistance : null,
