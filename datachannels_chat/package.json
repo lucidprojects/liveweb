@@ -1,0 +1,25 @@
+{
+  "name": "multipeer-simple-peer-server-datachannels",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vanevery/multipeer-simple-peer-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vanevery/multipeer-simple-peer-server/issues"
+  },
+  "homepage": "https://github.com/vanevery/multipeer-simple-peer-server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "file-system": "^2.2.2",
+    "socket.io": "^2.3.0"
+  }
+}

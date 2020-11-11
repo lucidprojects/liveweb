@@ -1,0 +1,55 @@
+<html>
+
+<head>
+	<link rel="stylesheet" href="css/styles.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
+		integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+	<script src="js/simplepeer.min.js"></script>
+	<script src="js/colors.js"></script>
+
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+	<script src="https://unpkg.com/cookie_js@1.2.2/cookie.min.js"></script>
+	<script src="js/index.js"></script>
+
+</head>
+
+<body>
+	<div id="help">help</div>
+	<button class="colors-button xlarge right" onclick="openRightMenu()"><i id="colors"
+			class="fas fa-palette"></i></button>
+	<div class="sidebar bar-block card animate-right" style="display:none;right:0;" id="colorsSection">
+		<button onclick="closeRightMenu()" class="bar-item chat-button chat-large">Close &times;</button>
+		<div class="main">
+
+			Color options:<br>Find the easter egg
+			colors.<br><br>aliceblue<br>antiquewhite<br>aqua<br>aquamarine<br>azure<br>beige<br>bisque<br>black<br>blanchedalmond<br><span
+				style="color:blue !important;">blue</span><br>blueviolet<br>brown<br>burlywood<br>cadetblue<br>chartreuse<br>chocolate<br>coral<br>cornflowerblue<br>cornsilk<br>crimson<br>cyan<br>darkblue<br>darkcyan<br>darkgoldenrod<br>darkgray<br>darkgrey<br>darkgreen<br>darkkhaki<br>darkmagenta<br>darkolivegreen<br>darkorange<br>darkorchid<br>darkred<br>darksalmon<br>darkseagreen<br>darkslateblue<br>darkslategray<br>darkslategrey<br>darkturquoise<br>darkviolet<br>deeppink<br>deepskyblue<br>dimgray<br>dimgrey<br>dodgerblue<br>firebrick<br>floralwhite<br>forestgreen<br>fuchsia<br>gainsboro<br>ghostwhite<br>gold<br>goldenrod<br>gray<br><span
+				style="color:grey !important;background-color:#fff;">grey</span><br><span
+				style="color:green !important;">green</span><br>greenyellow<br>honeydew<br>hotpink<br>indianred<br>indigo<br>ivory<br>khaki<br>lavender<br>lavenderblush<br>lawngreen<br>lemonchiffon<br>lightblue<br>lightcoral<br>lightcyan<br>lightgoldenrodyellow<br>lightgray<br>lightgrey<br>lightgreen<br>lightpink<br>lightsalmon<br>lightseagreen<br>lightskyblue<br>lightslategray<br>lightslategrey<br>lightsteelblue<br>lightyellow<br><span
+				style="color:lime !important;">lime</span><br>limegreen<br>linen<br>magenta<br>maroon<br>mediumaquamarine<br>mediumblue<br>mediumorchid<br>mediumpurple<br>mediumseagreen<br>mediumslateblue<br>mediumspringgreen<br>mediumturquoise<br>mediumvioletred<br>midnightblue<br>mintcream<br>mistyrose<br>moccasin<br>navajowhite<br>navy<br>oldlace<br>olive<br>olivedrab<br><span
+				style="color:orange !important;">orange</span><br>orangered<br>orchid<br>palegoldenrod<br>palegreen<br>paleturquoise<br>palevioletred<br>papayawhip<br>peachpuff<br>peru<br>pink<br>plum<br>powderblue<br><span
+				style="color:purple !important;">purple</span><br>rebeccapurple<br><span
+				style="color:red !important;">red</span><br>rosybrown<br>royalblue<br>saddlebrown<br>salmon<br>sandybrown<br>seagreen<br>seashell<br>sienna<br>silver<br>skyblue<br>slateblue<br>slategray<br>slategrey<br>snow<br>springgreen<br>steelblue<br>tan<br>teal<br>thistle<br>tomato<br><span
+				style="color:turquoise !important;">turquoise</span><br>violet<br>wheat<br><span
+				style="color:white !important;">white</span><br>whitesmoke<br><span
+				style="color:yellow !important;">yellow</span><br>yellowgreen
+		</div>
+	</div>
+	<div id="chatCtnr">
+		<div id="data">
+
+		</div>
+		<input type="text" id="dataInput"><input type="button" id="sendDataButton" value="send"><br>
+		<select id="users">
+			<option disabled>Public or Private Chat</option>
+			<option value="all">all - public</option>
+		</select>
+		See <input type="checkbox" id="localCheck" onClick="showLocal()">
+	</div>
+
+	<script type="text/javascript" src="https://unpkg.com/@popperjs/core@2"></script>
+	<script type="text/javascript" src="https://unpkg.com/tippy.js@6"></script>
+	<script type="text/javascript" src="js/tippy_rules.js"></script>
+
+</body>
+</html>
