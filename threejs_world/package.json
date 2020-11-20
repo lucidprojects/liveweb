@@ -1,0 +1,15 @@
+{
+  "name": "threejsworld",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.122.0"
+  },
+  "devDependencies": {},
+  "description": ""
+}
