@@ -14,18 +14,34 @@
 
 		<style>
 			body {
-				background-color: #bfd1e5;
-				color: #61443e;
+				background-color: #fff;
+				color: #000;
 			}
 			a {
 				color: #a06851;
 			}
+            #navigate_info{
+                padding: 5px;
+            }
 		</style>
 	</head>
 	<body>
+        
 
-		<div id="container"></div>
-		<div id="info"><a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - webgl terrain raycasting demo</div>
+    
+        <div id="container"></div>
+        <div id="info">threejs world</div>
+        
+        <div id="navigate_info">
+            <b>Move Red Cube</b>
+            <li>W/S: Translate Forward/Backward</li>
+            <li>A/D: Rotate Left/Right</li>
+            <li>Q/E: Translate Left/Right</li>
+            <li>R/F: Rotate Up/Down</li>
+            <li>T/G: Translate Up/Down (y)</li>
+            <li>Arrow keys: Translate (global directions)</li>
+            <li>Z: Reset position and rotation. </li>
+        </div>  
 
 		<script type="module">
 
