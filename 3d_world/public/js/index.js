@@ -4,16 +4,26 @@ let canvasSml, cSmlCtx;
 let filterMode = 0;
 let cw, ch;
 let simplepeers = [];
-var socket;
-var myMessageBox;
-var chatArray = [];
-var messegesWindow;
-var mystream;
-var canvasStream, audioStream, videoStream, myCstream;
-var isMuted = true;
-let localtv, myLocalId;
+let socket;
+let myMessageBox;
+let chatArray = [];
+let messegesWindow;
+let mystream;
+let canvasStream, audioStream, videoStream, myCstream;
+let isMuted = true;
+let myLocalId;
 
-var scene, clock;
+// scene.js variables needed outside module script
+let scene, clock;
+let controls;
+let redCube;
+let redCubeMaterials = [];
+let allMaterials = [];
+let myGifAreaTextMesh;
+let group;
+let testMaterial;
+let redCubeMaterialsGifs, redCubeMaterialsVideo;
+let peerTattooPrimaryMaterial, peerCubeMaterialsGifs, peerTattooMaterial;
 
 // setting global for testing
 let peerGroup, peerCubeRaycaster, peerPosition;
@@ -21,14 +31,14 @@ let posX, posY, posZ, rotX, rotY, rotZ;
 
 // wait for window to load
 window.addEventListener('load', function () {
-    
+
     // set up video, canvas, buttons
     let myVideo = document.getElementById('myVideo');
     let canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
 
     let canvasBack = document.getElementById('canvasBack');
-    var cbCtx = canvasBack.getContext('2d');
+    let cbCtx = canvasBack.getContext('2d');
 
     let tempCanvas = document.createElement("canvas");
     let tctx = tempCanvas.getContext("2d");
@@ -54,9 +64,6 @@ window.addEventListener('load', function () {
     normBtn.addEventListener('click', function () {
         filterMode = 0
     });
-    
-    // let rouletteBtn = document.getElementById('rouletteBtn');
-    //rouletteBtn.addEventListener('click', roulette);
 
     // mute on off - defaults to muted
     let muteBtn = document.getElementById('muteBtn');
@@ -85,12 +92,10 @@ window.addEventListener('load', function () {
     let gifPeerBtn = document.getElementById('gifPeerBtn');
     gifPeerBtn.addEventListener('click', peerGifMaterial);
 
-    localtv = document.getElementById('local_tv_ctnr');
-
     messegesWindow = document.getElementById('messages');
     myMessageBox = document.getElementById('message');
 
-    // set up some initial canvas vars
+    // set up some initial canvas lets
     cw = myVideo.clientWidth;
     ch = myVideo.clientHeight;
     canvas.width = cw;
@@ -98,19 +103,18 @@ window.addEventListener('load', function () {
     canvasBack.width = cw;
     canvasBack.height = ch;
 
-    // set up some initial Media Stream vars - these are important to happen before we getUserMedia
+    // set up some initial Media Stream lets - these are important to happen before we getUserMedia
     canvasStream = canvas.captureStream(25); // 25 FPS
     myCstream = new MediaStream;
 
-    // simplified canvas maniuplation func from http://html5doctor.com/video-canvas-magic/
-    // modified to have mulitple filters
-
+    // simplified canvas manipulation func from http://html5doctor.com/video-canvas-magic/
+    // modified to have multiple filters
     function draw(v, c, bc, w, h) {
         // First, draw it into the backing canvas
         bc.drawImage(v, 0, 0, w, h);
         // Grab the pixel data from the backing canvas
-        var idata = bc.getImageData(0, 0, w, h);
-        var data = idata.data;
+        let idata = bc.getImageData(0, 0, w, h);
+        let data = idata.data;
 
         // apply filters based on filterMode set with button
         filters(filterMode, data);
@@ -143,7 +147,7 @@ window.addEventListener('load', function () {
 
         // Global object
         mystream = stream;
-        
+
         // separate audio and video so we can add audio to canvas prior to streaming to peers    
         audioStream = new MediaStream(stream.getAudioTracks());
         videoStream = new MediaStream(stream.getVideoTracks());
@@ -183,15 +187,15 @@ window.addEventListener('load', function () {
         }, false);
     }
 
-    
+
 });
 
 
 // text chat funcs
-var sendmessage = function (message, user) {
+let sendmessage = function (message, user) {
     // console.log("sent chatmessage: " + message);
     socket.emit('chatmessage', message, liveWebUser);
-    var localMsg = "<br><div class=\"localmsg\"><span class=\"user\">" + liveWebUser + "</span>:  " + message + "</div>";
+    let localMsg = "<br><div class=\"localmsg\"><span class=\"user\">" + liveWebUser + "</span>:  " + message + "</div>";
     chatArray.push(localMsg);
     updateChat();
     clearChatInput();
@@ -221,18 +225,18 @@ function clearChatInput() {
 }
 
 function localPlayerMove(group, groupRotation) {
-    if (getLocalPlayerPosition(group,groupRotation) && socket) {
+    if (getLocalPlayerPosition(group, groupRotation) && socket) {
         socket.emit('move', getLocalPlayerPosition(group, groupRotation));
-    } 
+    }
 }
 
 function sendUpdatedLocalMaterial(mat, num) {
-        socket.emit('tattooPeerSelf', mat, num);
+    socket.emit('tattooPeerSelf', mat, num);
 }
 
 
 function sendUpdatedPeerMaterial(pan, num, pid) {
-        socket.emit('tattooPeer', pan, num, pid);
+    socket.emit('tattooPeer', pan, num, pid);
 }
 
 
@@ -256,7 +260,7 @@ function setupSocket() {
     socket.on('chatmessage', function (data, rUser) {
         console.log("chat received from " + rUser);
         console.log("received chat msg: " + data);
-        var remoteMsg = "<br><div class=\"remotemsg\"><span class=\"user\">" + rUser + "</span>: " + data + "</div>";
+        let remoteMsg = "<br><div class=\"remotemsg\"><span class=\"user\">" + rUser + "</span>: " + data + "</div>";
         chatArray.push(remoteMsg);
         updateChat();
         $("#messages").scrollTop($("#messages")[0].scrollHeight);
@@ -268,7 +272,7 @@ function setupSocket() {
     socket.on('peer_disconnect', function (data) {
         console.log("simplepeer has disconnected " + data);
         document.getElementById(data).remove();
-        
+
         for (let i = 0; i < simplepeers.length; i++) {
             if (simplepeers[i].socket_id == data) {
                 console.log("Removing simplepeer: " + i);
@@ -337,250 +341,255 @@ function setupSocket() {
     });
 
     // Update when one of the users moves in space
-	socket.on('peerPositions', posData => {
+    socket.on('peerPositions', posData => {
         let delta = clock.getDelta(); // seconds.
         let tempPosData = posData.pos.toString();
-        
+
         let tempPos = tempPosData.split(',');
         for (let i = 0; i < simplepeers.length; i++) {
-	        if (simplepeers[i].socket_id == posData.id) {
-                if(simplepeers[i].peerGroup) {
-                    
-                    simplepeers[i].peerGroup.position.set(tempPos[0],tempPos[1],tempPos[2]);
+            if (simplepeers[i].socket_id == posData.id) {
+                if (simplepeers[i].peerGroup) {
+
+                    simplepeers[i].peerGroup.position.set(tempPos[0], tempPos[1], tempPos[2]);
 
                     let tempLookAt = simplepeers[i].peerGroup.position.clone();
-                    
-                    if (posData.pos[1][0] === -100) simplepeers[i].peerGroup.lookAt(-100,0,0);
-                    if (posData.pos[1][0] ===  100) simplepeers[i].peerGroup.lookAt(100,0,0);
-                    if (posData.pos[1][2] === -100) simplepeers[i].peerGroup.lookAt(0,0,-100);
-                    if (posData.pos[1][2] === 100) simplepeers[i].peerGroup.lookAt(0,0,100);
-                    
-                    
-                }
-            }
-	    }
 
-    });
-    
+                    if (posData.pos[1][0] === -100) simplepeers[i].peerGroup.lookAt(-100, 0, 0);
+                    if (posData.pos[1][0] === 100) simplepeers[i].peerGroup.lookAt(100, 0, 0);
+                    if (posData.pos[1][2] === -100) simplepeers[i].peerGroup.lookAt(0, 0, -100);
+                    if (posData.pos[1][2] === 100) simplepeers[i].peerGroup.lookAt(0, 0, 100);
 
-    // Update peer material
-	socket.on('peerTattoo', tatData => {
-        
-        console.log("rec'd peerTattoo " + JSON.stringify(tatData));
-        
-        if (tatData.id == socket.id){
-            console.log("trying to tat the primary");
-
-
-            if(!peerTattooPrimaryMaterial){
-                console.log("I don't have  a peerTattooPrimaryMaterial");
-                peerTattooPrimaryMaterial = [ 
-                redCubeMaterials[0],
-                redCubeMaterials[1],
-                redCubeMaterials[2],
-                redCubeMaterials[3],
-                redCubeMaterials[4],
-                redCubeMaterials[5],
-                ]      
-            }else {
-                console.log("I already  have  a peerTattooPrimaryMaterial");  
-            }    
-
-            peerTattooPrimaryMaterial[tatData.pan] = allMaterials[tatData.num];    
-                    
-
-
-            redCube.traverse(function(child) {
-                if (child instanceof THREE.Mesh){
-                    child.material = peerTattooPrimaryMaterial;
-                }
-                redCube.geometry.uvsNeedUpdate = true;
-                redCube.needsUpdate=true;
-            });  
-
-
-
-
-        }else {
-
-            for (let peer in simplepeers){
-                if (simplepeers[peer].socket_id == tatData.id){
-                    console.log(`set peer texture of ${tatData.id}`);
-                    peerTattooMaterial = [ 
-                            simplepeers[peer].material[0],
-                            simplepeers[peer].material[1],
-                            simplepeers[peer].material[2],
-                            simplepeers[peer].material[3],
-                            simplepeers[peer].material[4],
-                            simplepeers[peer].material[5],
-                            ]      
-
-
-                    console.log(JSON.stringify(simplepeers[peer].material));        
-                    // let ranMatNum = Math.floor(Math.random() * 5);
-                    //     if (ranMatNum == 4) {
-                    //         ranMatNum = ranMatNum +1
-                            
-                    //     } 
-                        
-                        peerTattooMaterial[tatData.pan] = allMaterials[tatData.num];    
-                        simplepeers[peer].material = peerTattooMaterial;   
-
-
-                    simplepeers[peer].peerCube.traverse(function(child) {
-                        if (child instanceof THREE.Mesh){
-                            child.material = peerTattooMaterial;
-                        }
-                        simplepeers[peer].geometry.uvsNeedUpdate = true;
-                        simplepeers[peer].needsUpdate=true;
-                        console.log(JSON.stringify(simplepeers[peer].material));
-                    });  
 
                 }
             }
         }
-        
 
     });
-    
+
+
+    // Update peer material
+    socket.on('peerTattoo', tatData => {
+
+        console.log("rec'd peerTattoo " + JSON.stringify(tatData));
+
+        // check if peer to update is local primary
+        if (tatData.id == socket.id) {
+            console.log("trying to tat the primary");
+
+            if (!peerTattooPrimaryMaterial) {
+                console.log("I don't have  a peerTattooPrimaryMaterial");
+                peerTattooPrimaryMaterial = [
+                    redCubeMaterials[0],
+                    redCubeMaterials[1],
+                    redCubeMaterials[2],
+                    redCubeMaterials[3],
+                    redCubeMaterials[4],
+                    redCubeMaterials[5],
+                ]
+            } else {
+                console.log("I already  have  a peerTattooPrimaryMaterial");
+            }
+
+            peerTattooPrimaryMaterial[tatData.pan] = allMaterials[tatData.num];
+
+            redCube.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    child.material = peerTattooPrimaryMaterial;
+                }
+                redCube.geometry.uvsNeedUpdate = true;
+                redCube.needsUpdate = true;
+            });
+
+        } else {
+
+            // iterate through peers array
+            for (let peer in simplepeers) {
+                if (simplepeers[peer].socket_id == tatData.id) {
+                    console.log(`set peer texture of ${tatData.id}`);
+                    peerTattooMaterial = [
+                        simplepeers[peer].material[0],
+                        simplepeers[peer].material[1],
+                        simplepeers[peer].material[2],
+                        simplepeers[peer].material[3],
+                        simplepeers[peer].material[4],
+                        simplepeers[peer].material[5],
+                    ]
+
+                    console.log(JSON.stringify(simplepeers[peer].material));
+
+                    peerTattooMaterial[tatData.pan] = allMaterials[tatData.num];
+                    simplepeers[peer].material = peerTattooMaterial;
+
+
+                    simplepeers[peer].peerCube.traverse(function (child) {
+                        if (child instanceof THREE.Mesh) {
+                            child.material = peerTattooMaterial;
+                        }
+                        simplepeers[peer].geometry.uvsNeedUpdate = true;
+                        simplepeers[peer].needsUpdate = true;
+                        console.log(JSON.stringify(simplepeers[peer].material));
+                    });
+
+                }
+            }
+        }
+
+
+    });
+
     socket.on('applyPeerSelfTattoo', recTatData => {
         let peerSelftattoodMaterial;
 
-        for (let peer in simplepeers){
-            if (simplepeers[peer].socket_id == recTatData.id){
+        for (let peer in simplepeers) {
+            if (simplepeers[peer].socket_id == recTatData.id) {
 
-                switch(recTatData.num){
-                    case(1):  //gifyouself
-                        peerSelftattoodMaterial = [ 
-                        allMaterials[9],
-                        allMaterials[6],
-                        allMaterials[7],
-                        allMaterials[8],
-                        simplepeers[peer].material[4],
-                        allMaterials[10],
-                        ]  
-                    break;
-                    
-                    case(2):  //video self
-                        peerSelftattoodMaterial = [ 
-                        simplepeers[peer].material[4],
-                        simplepeers[peer].material[4],
-                        simplepeers[peer].material[4],
-                        simplepeers[peer].material[4],
-                        simplepeers[peer].material[4],
-                        simplepeers[peer].material[4],
-                        ]  
-                    break;
+                switch (recTatData.num) {
+                    case (1): //gifyouself
+                        peerSelftattoodMaterial = [
+                            allMaterials[9],
+                            allMaterials[6],
+                            allMaterials[7],
+                            allMaterials[8],
+                            simplepeers[peer].material[4],
+                            allMaterials[10],
+                        ]
+                        break;
 
-                    case(3):  //defalut self
-                        peerSelftattoodMaterial = [ 
-                        new THREE.MeshBasicMaterial( { color: simplepeers[peer].materialColor, wireframe: false  }) ,
-                        new THREE.MeshBasicMaterial( { color: simplepeers[peer].materialColor, wireframe: false  }) ,
-                        new THREE.MeshBasicMaterial( { color: simplepeers[peer].materialColor, wireframe: false  }) ,
-                        new THREE.MeshBasicMaterial( { color: simplepeers[peer].materialColor, wireframe: false  }) ,
-                        simplepeers[peer].material[4],
-                        new THREE.MeshBasicMaterial( { color: simplepeers[peer].materialColor, wireframe: false  }) ,
-                        ]  
-                    break;
+                    case (2): //video self
+                        peerSelftattoodMaterial = [
+                            simplepeers[peer].material[4],
+                            simplepeers[peer].material[4],
+                            simplepeers[peer].material[4],
+                            simplepeers[peer].material[4],
+                            simplepeers[peer].material[4],
+                            simplepeers[peer].material[4],
+                        ]
+                        break;
 
-                }    
-                simplepeers[peer].peerCube.traverse(function(child) {
-                    if (child instanceof THREE.Mesh){
+                    case (3): //defalut self
+                        peerSelftattoodMaterial = [
+                            new THREE.MeshBasicMaterial({
+                                color: simplepeers[peer].materialColor,
+                                wireframe: false
+                            }),
+                            new THREE.MeshBasicMaterial({
+                                color: simplepeers[peer].materialColor,
+                                wireframe: false
+                            }),
+                            new THREE.MeshBasicMaterial({
+                                color: simplepeers[peer].materialColor,
+                                wireframe: false
+                            }),
+                            new THREE.MeshBasicMaterial({
+                                color: simplepeers[peer].materialColor,
+                                wireframe: false
+                            }),
+                            simplepeers[peer].material[4],
+                            new THREE.MeshBasicMaterial({
+                                color: simplepeers[peer].materialColor,
+                                wireframe: false
+                            }),
+                        ]
+                        break;
+
+                }
+                simplepeers[peer].peerCube.traverse(function (child) {
+                    if (child instanceof THREE.Mesh) {
                         child.material = peerSelftattoodMaterial;
                     }
                     simplepeers[peer].geometry.uvsNeedUpdate = true;
-                    simplepeers[peer].needsUpdate=true;
-                });  
+                    simplepeers[peer].needsUpdate = true;
+                });
             }
-        }   
-        
+        }
 
-	});
+
+    });
 
 }
 
 
 // Aidan's audio code to modify for proximity.
 function updateClientVolumes() {
-        let distSquared;
-		for (let peer in simplepeers) {
-            let audioEl = document.getElementById(peer +"_audio");
-			if (audioEl) {
-                if (distSquared > 35) {
-					// console.log('setting vol to 0')
-                    audioEl.volume = 0;
-                   // console.log("hey where is everybody?");
-				} else {
-					// from lucasio here: https://discourse.threejs.org/t/positionalaudio-setmediastreamsource-with-webrtc-question-not-hearing-any-sound/14301/29
-					let volume = Math.min(1, 10 / distSquared);
-                    audioEl.volume = volume;
-                }
-			}
-		}
-	}
+    let distSquared;
+    for (let peer in simplepeers) {
+        let audioEl = document.getElementById(peer + "_audio");
+        if (audioEl) {
+            if (distSquared > 35) {
+                // console.log('setting vol to 0')
+                audioEl.volume = 0;
+                // console.log("hey where is everybody?");
+            } else {
+                // from lucasio here: https://discourse.threejs.org/t/positionalaudio-setmediastreamsource-with-webrtc-question-not-hearing-any-sound/14301/29
+                let volume = Math.min(1, 10 / distSquared);
+                audioEl.volume = volume;
+            }
+        }
+    }
+}
 
 
-// apply gif texture to peers in close proximity // based Aidan's audio code to modify for proximity.
+// apply gif texture to peers in close proximity // based on Aidan's audio code to modify for proximity.
 function peerGifMaterial() {
-       
-		for (let peer in simplepeers) {
-            let distSquared;
-            // if(simplepeers[peer].position) distSquared = group.position.distanceToSquared(simplepeers[peer].peerGroup.position);
-            distSquared = group.position.distanceToSquared(simplepeers[peer].peerGroup.position);
-            console.log("distSquared =" + distSquared)
-            if (distSquared > 5) {
-                console.log("hey where is everybody?");
-			} else {
-                console.log(`hey we're close. maybe? ${simplepeers[peer].socket_id}`);
-                let randomGifNum = randomIntFromInterval(6,11)
-                let randomPanNum = randomIntFromInterval(1,5)
-                console.log("randomGifNum = " + randomGifNum)
 
-                console.log(simplepeers[peer].material)
+    for (let peer in simplepeers) {
+        let distSquared;
+        // if(simplepeers[peer].position) distSquared = group.position.distanceToSquared(simplepeers[peer].peerGroup.position);
+        distSquared = group.position.distanceToSquared(simplepeers[peer].peerGroup.position);
+        console.log("distSquared =" + distSquared)
+        if (distSquared > 5) {
+            console.log("hey where is everybody?");
+        } else {
+            console.log(`hey we're close. maybe? ${simplepeers[peer].socket_id}`);
+            let randomGifNum = randomIntFromInterval(6, 11)
+            let randomPanNum = randomIntFromInterval(1, 5)
+            console.log("randomGifNum = " + randomGifNum)
 
-                // check if there is already a peerCubeMaterialsGifs array if not create it
-                if(!peerCubeMaterialsGifs){
-                    console.log("I don't have  a peerCubeMaterialsGifs");
-                    peerCubeMaterialsGifs = [ 
+            console.log(simplepeers[peer].material)
+
+            // check if there is already a peerCubeMaterialsGifs array if not create it
+            if (!peerCubeMaterialsGifs) {
+                console.log("I don't have  a peerCubeMaterialsGifs");
+                peerCubeMaterialsGifs = [
                     simplepeers[peer].material[0],
                     simplepeers[peer].material[1],
                     simplepeers[peer].material[2],
                     simplepeers[peer].material[3],
                     simplepeers[peer].material[4],
                     simplepeers[peer].material[5],
-                    ]      
-                }else {
-                    console.log("I already  have  a peerCubeMaterialsGifs");  
-                }    
+                ]
+            } else {
+                console.log("I already  have  a peerCubeMaterialsGifs");
+            }
 
-                // don't change primary video face
-                if (randomPanNum == 4) {
-                    randomPanNum = randomPanNum +1
-                } 
-                
-                peerCubeMaterialsGifs[randomPanNum] = allMaterials[randomGifNum];    
+            // don't change primary video face
+            if (randomPanNum == 4) {
+                randomPanNum = randomPanNum + 1
+            }
 
-                // traverse mesh and update materials
-                simplepeers[peer].peerCube.traverse(function(child) {
-                    if (child instanceof THREE.Mesh){
-                        child.material = peerCubeMaterialsGifs;
-                    }
-                    simplepeers[peer].geometry.uvsNeedUpdate = true;
-                    simplepeers[peer].needsUpdate=true;
-                    console.log(simplepeers[peer].material)
-                });    
+            peerCubeMaterialsGifs[randomPanNum] = allMaterials[randomGifNum];
 
-                console.log("peerGifMaterial simplepeers[peer].socket_id) " + simplepeers[peer].socket_id);
+            // traverse mesh and update materials
+            simplepeers[peer].peerCube.traverse(function (child) {
+                if (child instanceof THREE.Mesh) {
+                    child.material = peerCubeMaterialsGifs;
+                }
+                simplepeers[peer].geometry.uvsNeedUpdate = true;
+                simplepeers[peer].needsUpdate = true;
+                console.log(simplepeers[peer].material)
+            });
 
-                sendUpdatedPeerMaterial(randomPanNum,randomGifNum, simplepeers[peer].socket_id);
-			}
+            console.log("peerGifMaterial simplepeers[peer].socket_id) " + simplepeers[peer].socket_id);
+
+            sendUpdatedPeerMaterial(randomPanNum, randomGifNum, simplepeers[peer].socket_id);
+        }
 
 
-		}
-	}    
+    }
+}
 
 function randomIntFromInterval(min, max) { // min and max included 
-  return Math.floor(Math.random() * (max - min + 1) + min);
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 // A wrapper for simplepeer as we need a bit more than it provides
@@ -653,7 +662,7 @@ class SimplePeerWrapper {
             let mySocketID = document.getElementById(this.socket_id);
 
             mySocketID.appendChild(oCanvas);
-            
+
             let peerCanvasCtx = oCanvas.getContext('2d');
 
             //adding "video" to id to differentiate between newDiv and ovideo id
@@ -680,101 +689,117 @@ class SimplePeerWrapper {
 
 
             mySocketID.appendChild(oCanvas);
-            
-            function addPeerCube(pId){
 
-                    //import * as THREE from '../../../build/three.module.js';
+            function addPeerCube(pId) {
 
-                    if (!pId) console.log("time from index.js script " + Date.now());
+                //import * as THREE from '../../../build/three.module.js';
 
-                    else {
-                        console.log("lets add a cube for peer id = " + pId);
-                        // console.log("addPeerCube func = " + JSON.stringify(scene));
+                if (!pId) console.log("time from index.js script " + Date.now());
 
-                        peerGroup = new THREE.Group(
-                            new THREE.BoxBufferGeometry(),
-                        ); 
-                        
-                        //create video texture
-                        const myPeerToMaterial = document.getElementById(String(pId).concat("_canvas"));
-                        const myPeerVidtexture = new THREE.CanvasTexture(myPeerToMaterial);
-                        myPeerVidtexture.minFilter = THREE.LinearFilter;    
+                else {
+                    console.log("lets add a cube for peer id = " + pId);
+                    // console.log("addPeerCube func = " + JSON.stringify(scene));
 
-                        let ranR = Math.floor(Math.random() * 255);
-                        let ranG = Math.floor(Math.random() * 255);
-                        let ranB = Math.floor(Math.random() * 255);
+                    peerGroup = new THREE.Group(
+                        new THREE.BoxBufferGeometry(),
+                    );
 
-                        let randomColor = new THREE.Color("rgb(" + ranR + ", " + ranG + ", " + ranB+ ")");
-                        let peerDefaultcolor = randomColor;
-                        //create an array with six textures for a cool cube
-                        var peerCubeGeometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
-                        var peerCubeMaterials = [
-                            new THREE.MeshBasicMaterial( { color: randomColor, wireframe: false  }) ,
-                            new THREE.MeshBasicMaterial( { color: randomColor, wireframe: false  }) ,
-                            new THREE.MeshBasicMaterial( { color: randomColor, wireframe: false  }) ,
-                            new THREE.MeshBasicMaterial( { color: randomColor, wireframe: false  }) ,
-                            new THREE.MeshBasicMaterial( { map: myPeerVidtexture }),
-                            new THREE.MeshBasicMaterial( { color: randomColor, wireframe: false  }) ,
-                        ];
+                    //create video texture
+                    const myPeerToMaterial = document.getElementById(String(pId).concat("_canvas"));
+                    const myPeerVidtexture = new THREE.CanvasTexture(myPeerToMaterial);
+                    myPeerVidtexture.minFilter = THREE.LinearFilter;
 
-                        const peerCube = new THREE.Mesh( peerCubeGeometry, peerCubeMaterials );    
+                    let ranR = Math.floor(Math.random() * 255);
+                    let ranG = Math.floor(Math.random() * 255);
+                    let ranB = Math.floor(Math.random() * 255);
 
-                        peerCube.position.set(0, 0.5, 0);
-                        peerGroup.add( peerCube );
+                    let randomColor = new THREE.Color("rgb(" + ranR + ", " + ranG + ", " + ranB + ")");
+                    let peerDefaultcolor = randomColor;
+                    //create an array with six textures for a cool cube
+                    let peerCubeGeometry = new THREE.BoxBufferGeometry(1, 1, 1);
+                    let peerCubeMaterials = [
+                        new THREE.MeshBasicMaterial({
+                            color: randomColor,
+                            wireframe: false
+                        }),
+                        new THREE.MeshBasicMaterial({
+                            color: randomColor,
+                            wireframe: false
+                        }),
+                        new THREE.MeshBasicMaterial({
+                            color: randomColor,
+                            wireframe: false
+                        }),
+                        new THREE.MeshBasicMaterial({
+                            color: randomColor,
+                            wireframe: false
+                        }),
+                        new THREE.MeshBasicMaterial({
+                            map: myPeerVidtexture
+                        }),
+                        new THREE.MeshBasicMaterial({
+                            color: randomColor,
+                            wireframe: false
+                        }),
+                    ];
 
-                        let initialPeerX = Math.ceil(Math.random() * 5) * (Math.round(Math.random()) ? 1 : -1)
+                    const peerCube = new THREE.Mesh(peerCubeGeometry, peerCubeMaterials);
 
-                        peerGroup.position.set(initialPeerX,2,0);
-                    
-                        scene.add( peerGroup );
-                        
-                        for(let i = 0; i < simplepeers.length; i++) {
-                            if (simplepeers[i].socket_id == socket_id) {
-                                //console.log("adding group vals for " + simplepeers[i].socket_id);
-                                simplepeers[i].peerGroup = peerGroup;
-                                simplepeers[i].peerCube = peerCube;
-                                simplepeers[i].geometry = peerCubeGeometry;
-                                simplepeers[i].material = peerCubeMaterials;
-                                simplepeers[i].materialColor = peerDefaultcolor;
-                                simplepeers[i].texture = myPeerVidtexture;
-                                simplepeers[i].desiredPosition = new THREE.Vector3();
-                                simplepeers[i].desiredRotation = new THREE.Quaternion();
-                                simplepeers[i].oldPos = peerGroup.position
-                                simplepeers[i].oldRot = peerGroup.quaternion;
-                                simplepeers[i].movementAlpha = 0;
-                            }
+                    peerCube.position.set(0, 0.5, 0);
+                    peerGroup.add(peerCube);
+
+                    let initialPeerX = Math.ceil(Math.random() * 5) * (Math.round(Math.random()) ? 1 : -1)
+
+                    peerGroup.position.set(initialPeerX, 2, 0);
+
+                    scene.add(peerGroup);
+
+                    for (let i = 0; i < simplepeers.length; i++) {
+                        if (simplepeers[i].socket_id == socket_id) {
+                            //console.log("adding group vals for " + simplepeers[i].socket_id);
+                            simplepeers[i].peerGroup = peerGroup;
+                            simplepeers[i].peerCube = peerCube;
+                            simplepeers[i].geometry = peerCubeGeometry;
+                            simplepeers[i].material = peerCubeMaterials;
+                            simplepeers[i].materialColor = peerDefaultcolor;
+                            simplepeers[i].texture = myPeerVidtexture;
+                            simplepeers[i].desiredPosition = new THREE.Vector3();
+                            simplepeers[i].desiredRotation = new THREE.Quaternion();
+                            simplepeers[i].oldPos = peerGroup.position
+                            simplepeers[i].oldRot = peerGroup.quaternion;
+                            simplepeers[i].movementAlpha = 0;
                         }
+                    }
 
-                        
-                       
-                    }    
+
+
+                }
 
             }
 
 
 
-           
-           // update all peer canvases  
-           function updatePeerTexture(){
+
+            // update all peer canvases  
+            function updatePeerTexture() {
                 requestAnimationFrame(updatePeerTexture);
-                for(let i = 0; i < simplepeers.length; i++) {
+                for (let i = 0; i < simplepeers.length; i++) {
                     //console.log("updating textures?")
                     let myText = simplepeers[i].texture
-                    if(simplepeers[i].texture) myText.needsUpdate = true;
-                } 
+                    if (simplepeers[i].texture) myText.needsUpdate = true;
+                }
 
 
             }
 
 
-            try{
-            addPeerCube(this.socket_id);
+            try {
+                addPeerCube(this.socket_id);
+            } catch (err) {
+                console.log(err);
+                console.log(Date.now());
             }
-            catch(err){
-            console.log(err);
-            console.log(Date.now());
-            }        
-           
+
         });
 
     }
@@ -799,7 +824,7 @@ function mapRange(value, a, b, c, d) {
 
 // handle manipulation filters
 function filters(f, data) {
-    for (var i = 0; i < data.length; i += 4) {
+    for (let i = 0; i < data.length; i += 4) {
         switch (f) {
             case 0: //normal
                 data[i] = data[i];
@@ -849,3 +874,114 @@ function filters(f, data) {
         }
     }
 }
+
+// init gif canvas
+initGifs();
+
+function getLocalPlayerPosition(group, groupRotation) {
+
+    return [
+        [group.position.x, group.position.y, group.position.z],
+        [groupRotation.x, groupRotation.y, groupRotation.z]
+    ];
+}
+
+function gifYoSelfCubed() {
+    redCubeMaterialsGifs = [
+        allMaterials[9],
+        allMaterials[6],
+        allMaterials[7],
+        allMaterials[8],
+        allMaterials[5],
+        allMaterials[10]
+    ]
+    updateCubeMaterials(redCubeMaterialsGifs);
+    sendUpdatedLocalMaterial(redCubeMaterialsGifs, 1);
+}
+
+
+function videoCubeMesh() {
+    redCubeMaterialsVideo = [
+        allMaterials[5],
+        allMaterials[5],
+        allMaterials[5],
+        allMaterials[5],
+        allMaterials[5],
+        allMaterials[5],
+    ]
+    updateCubeMaterials(redCubeMaterialsVideo);
+    sendUpdatedLocalMaterial(redCubeMaterialsVideo, 2);
+}
+
+function defaultCubeMesh() {
+    updateCubeMaterials(redCubeMaterials);
+    sendUpdatedLocalMaterial(redCubeMaterials, 3);
+}
+
+// modified from 
+// https://stackoverflow.com/questions/36223281/three-js-changing-material-on-obj-with-button-click
+function updateCubeMaterials(mat) {
+    redCube.traverse(function (child) {
+        if (child instanceof THREE.Mesh) {
+            child.material = mat;
+        }
+        redCube.geometry.uvsNeedUpdate = true;
+        redCube.needsUpdate = true;
+    });
+}
+
+
+
+let liveWebUser = cookie.get('liveWebUser');
+if (!liveWebUser) {
+    //prompt them to set a user if no cookie found
+    liveWebUser = prompt('Choose a username:');
+    if (!liveWebUser) {
+        alert('Something\'s wrong here');
+    } else {
+        // set cookie for username
+        cookie.set('liveWebUser', liveWebUser);
+        //  console.log("set liveWebUser = " + liveWebUser);
+    }
+}
+
+let chatOpen = false;
+
+function openRightMenu() {
+    if (chatOpen == false) {
+        document.getElementById("rightMenu").style.display = "block";
+        chatOpen = true;
+
+    } else {
+        document.getElementById("rightMenu").style.display = "none";
+        chatOpen = false;
+
+    }
+}
+
+function closeRightMenu() {
+    document.getElementById("rightMenu").style.display = "none";
+    chatOpen = false;
+
+}
+
+let width = window.innerWidth;
+let heightMinusBtm;
+let messagesHeightjq = $('#messages').height();
+
+let messagesHeightAdj = () => {
+    if (width > 499) heightMinusBtm = $(window).height() - 100;
+    else heightMinusBtm = $(window).height() - 150;
+    //console.log(heightMinusBtm);
+    if ($('#messages').height() > heightMinusBtm) $('#messages').css('height', heightMinusBtm);
+}
+
+$(document).ready(function () {
+    messagesHeightAdj();
+    if (messagesHeightjq > 50) console.log('messagesHeight = ' + messagesHeight +
+        ' messagesHeightjq = ' + messagesHeightjq);
+});
+
+$(window).resize(function () {
+    messagesHeightAdj();
+});

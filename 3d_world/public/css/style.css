@@ -1,7 +1,10 @@
 body {
-    /* background-image: url(/images/bg.jpg); */
-    background-size: cover;
+    margin: 0;
+    background-color: #000;
     font-family: Helvetica, Arial, Sans, sans-serif;
+    font-size: 13px;
+    line-height: 24px;
+    overscroll-behavior: none;
 }
 
 .resizable {
@@ -426,3 +429,13 @@ body {
     display: none;
 }
 
+ .jsgif {
+
+     position: absolute;
+     left: -1000px;
+ }
+
+ #myGifArea {
+     position: absolute;
+     left: -1000px;
+ }
