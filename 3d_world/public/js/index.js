@@ -92,6 +92,28 @@ window.addEventListener('load', function () {
     let gifPeerBtn = document.getElementById('gifPeerBtn');
     gifPeerBtn.addEventListener('click', peerGifMaterial);
 
+
+
+
+    let spotifyDisplayBtn = document.getElementById('fullSpotifyBtn');
+    let spotifyIframe = document.getElementById('spotify-embed-iframe');
+    
+    
+    spotifyDisplayBtn.addEventListener('click', function(){
+        if(spotifyDisplayBtn.innerHTML == 'show playlist'){
+            spotifyDisplayBtn.innerHTML = 'hide playlist';
+            spotifyIframe.style.width = '300px';
+            spotifyIframe.style.height = '380px';
+        } else if(spotifyDisplayBtn.innerHTML == 'hide playlist'){
+            spotifyDisplayBtn.innerHTML = 'show playlist';
+            spotifyIframe.style.width = '80px';
+            spotifyIframe.style.height = '80px';
+        }
+
+
+    });
+
+
     messegesWindow = document.getElementById('messages');
     myMessageBox = document.getElementById('message');
 

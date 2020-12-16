@@ -23,6 +23,9 @@
     <script type="text/javascript" src="https://unpkg.com/cookie_js@1.2.2/cookie.min.js"></script>
     <script src="js/libgif.js"></script>
     <script src="js/rubbable.js"></script>
+    <!-- <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script src="js/spotify_webplayer.js"></script> -->
+
 
 </head>
 
@@ -48,17 +51,18 @@
     <audio id="myAudio" controls autoplay></audio>
     <canvas id="canvas"></canvas>
     <canvas id="canvasBack"></canvas>
+    <div id="btnCtnr">
+    <button id="muteBtn"><i id="muteSym" class="fas fa-microphone-slash"></i>mute</button>
     <button id="inverBtn">inverse</button>
     <button id="weirdBtn">weird</button>
     <button id="tintBtn">weird 2</button>
     <button id="brightBtn">brightness</button>
     <button id="normBtn">normal</button>
-    <button id="muteBtn"><i id="muteSym" class="fas fa-microphone-slash"></i>mute</button>
-    <button id="gifyoselfBtn">gif yoself</button>
+    <button id="gifyoselfBtn">gif yourself</button>
     <button id="videoyoselfBtn">video cube</button>
     <button id="defaultcubeBtn">reset cube</button>
     <button id="gifPeerBtn">gif Peer</button>
-
+    </div>    
 
     <img id="gif1" src="gifs/nyancat.gif" rel:animated_src="gifs/nyancat.gif" rel:auto_play="1" width="200"
         height="200" />
@@ -71,16 +75,18 @@
         height="200" />
     <img id="gif6" src="gifs/obama_mic_sq_200.gif" rel:animated_src="gifs/obama_mic_sq_200.gif" rel:auto_play="1"
         width="200" height="200" />
-
-
+    <div id="spotify_ctnr">
+    <iframe id="spotify-embed-iframe" src="https://open.spotify.com/embed?uri=spotify:playlist:0AKHywGxuYc16tGjagNadC" width="80" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+    <div id="fullSpotifyBtn">show playlist</div>
+    </div>
 
     <script src="js/roulette.js"></script>
-    <script type="text/javascript" src="js/index_test.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
     <script type="module" src="js/scene.js"></script>
     <script type="text/javascript" src="https://unpkg.com/@popperjs/core@2"></script>
     <script type="text/javascript" src="https://unpkg.com/tippy.js@6"></script>
     <script type="text/javascript" src="js/tippy_rules.js"></script>
-
+   
 </body>
 
 </html>

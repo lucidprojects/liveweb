@@ -284,10 +284,15 @@ body {
     width: 110px;
 }
 
+#btnCtnr {
+    position: absolute;
+    top: -77px;
+}
+
 #muteBtn {
     position: absolute;
     z-index: 150;
-    top: 324px;
+    top: 124px;
     left: 0;
     width: 110px;
 }
@@ -429,13 +434,36 @@ body {
     display: none;
 }
 
- .jsgif {
+.jsgif {
 
-     position: absolute;
-     left: -1000px;
- }
+    position: absolute;
+    left: -1000px;
+}
 
- #myGifArea {
-     position: absolute;
-     left: -1000px;
- }
+#myGifArea {
+    position: absolute;
+    left: -1000px;
+}
+
+
+#spotify_ctnr{
+    position: absolute ;
+    top: 50px;
+    right: 0px;
+}
+
+#spotify-embed-iframe {
+    /* position: absolute;
+    top: 50px;
+    right: 0px; */
+}
+
+#fullSpotifyBtn {
+    position: relative;
+    top: -7px;
+    width: 80px;
+    font-size: 11px;
+    color: #ffffff;
+    cursor: pointer;
+    
+}
